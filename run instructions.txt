@@ -1,0 +1,79 @@
+
+DISASTER RESPONSE COMMAND CENTER — RUN INSTRUCTIONS
+=====================================================
+
+REQUIREMENTS
+------------
+- Python 3.10 or higher
+- pip
+
+
+STEP 1 — Navigate to the project directory
+-------------------------------------------
+cd disaster-response-dashboard
+
+
+STEP 2 — Install dependencies
+-------------------------------
+pip install -r requirements.txt
+
+
+STEP 3 — Start the backend server
+-----------------------------------
+uvicorn backend.main:app --reload
+
+The dataset (data/disaster_reports.csv) is generated automatically
+on first startup if it does not exist.
+
+Backend URL:  http://127.0.0.1:8000
+API docs:     http://127.0.0.1:8000/docs
+Health:       http://127.0.0.1:8000/api/health
+
+
+STEP 4 — Open the frontend
+----------------------------
+The frontend is served by FastAPI — no separate web server needed.
+
+Landing page:   http://127.0.0.1:8000
+Dashboard:      http://127.0.0.1:8000/dashboard
+
+
+API ENDPOINTS (Phase 1)
+-----------------------
+GET  /api/health                    — Health check
+GET  /api/reports                   — List reports (paginated, filterable)
+GET  /api/reports/{report_id}       — Single report by ID (e.g. RPT-00001)
+GET  /api/dashboard/stats           — Aggregated dashboard statistics
+GET  /docs                          — Swagger interactive API documentation
+
+
+EXAMPLE API CALLS
+-----------------
+# Health
+curl http://127.0.0.1:8000/api/health
+
+# First 25 reports
+curl "http://127.0.0.1:8000/api/reports?limit=25&offset=0"
+
+# Filter by incident type
+curl "http://127.0.0.1:8000/api/reports?incident_type=Road%20Flooding&limit=10"
+
+# Search free text
+curl "http://127.0.0.1:8000/api/reports?search=flooding&limit=10"
+
+# Single report
+curl http://127.0.0.1:8000/api/reports/RPT-00001
+
+# Invalid report (returns 404)
+curl http://127.0.0.1:8000/api/reports/RPT-99999
+
+# Dashboard statistics
+curl http://127.0.0.1:8000/api/dashboard/stats
+
+
+NOTES
+-----
+- Use --reload for development (auto-restarts on code changes).
+- The dataset is generated with a fixed seed (42) for reproducibility.
+- Do NOT use --reload in production.
+- Ground truth field is for evaluation only; it is not displayed in the UI.
