@@ -1,15 +1,8 @@
 /**
  * app.js
  * ======
- * Global application utilities and shared UI behaviours.
- *
- * Responsibilities:
- *  - Role selector
- *  - System status (health check)
- *  - Last-updated clock
- *  - Toast notification system
- *  - Common DOM helpers
- *  - Navigation helpers
+ * Global application utilities, persistent navigation, role management,
+ * confirmation modal, and shared UI behaviors for Phase 3.
  */
 
 (function () {
@@ -28,12 +21,6 @@
     return _toastContainer;
   }
 
-  /**
-   * Show a toast notification.
-   * @param {string} message
-   * @param {'info'|'success'|'warning'|'error'} type
-   * @param {number} durationMs
-   */
   function showToast(message, type = 'info', durationMs = 3500) {
     const container = getToastContainer();
     const toast = document.createElement('div');
@@ -48,7 +35,7 @@
     }, durationMs);
   }
 
-  // ── Role Selector ──────────────────────────────────────────────────────────
+  // ── Role Selector Persistence ──────────────────────────────────────────────
 
   const ROLES = ['Responder', 'City Official', 'Coordinator'];
   const ROLE_KEY = 'drp_selected_role';
@@ -57,7 +44,6 @@
     const select = document.getElementById('role-select');
     if (!select) return;
 
-    // Populate options if empty
     if (select.options.length === 0) {
       ROLES.forEach(role => {
         const opt = document.createElement('option');
@@ -67,24 +53,49 @@
       });
     }
 
-    // Restore saved role
     const saved = localStorage.getItem(ROLE_KEY);
-    if (saved && ROLES.includes(saved)) select.value = saved;
+    if (saved && ROLES.includes(saved)) {
+      select.value = saved;
+    }
 
     select.addEventListener('change', () => {
       const role = select.value;
       localStorage.setItem(ROLE_KEY, role);
-      showToast(`Role switched to: ${role}`, 'info', 2000);
+      showToast(`Role view switched to: ${role}`, 'info', 2000);
       document.dispatchEvent(new CustomEvent('roleChanged', { detail: { role } }));
     });
   }
 
   function getCurrentRole() {
     const select = document.getElementById('role-select');
-    return select ? select.value : localStorage.getItem(ROLE_KEY) || 'Responder';
+    return select ? select.value : (localStorage.getItem(ROLE_KEY) || 'Responder');
   }
 
-  // ── System Status (health check) ───────────────────────────────────────────
+  // ── Navigation Bar Active Link Highlighting ───────────────────────────────
+
+  function initNavHighlighting() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const path = window.location.pathname.toLowerCase();
+
+    navLinks.forEach(link => {
+      const href = link.getAttribute('href').toLowerCase();
+      if (
+        href === path ||
+        (path === '/' && href === '/dashboard.html') ||
+        (path.includes('dashboard') && href.includes('dashboard')) ||
+        (path.includes('reports') && !path.includes('details') && href.includes('reports.html')) ||
+        (path.includes('report-details') && href.includes('report-details')) ||
+        (path.includes('analytics') && href.includes('analytics')) ||
+        (path.includes('methodology') && href.includes('methodology'))
+      ) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
+  // ── System Status (Health Check) ──────────────────────────────────────────
 
   const STATUS_PILL_ID = 'system-status';
   let _healthCheckInterval = null;
@@ -95,85 +106,70 @@
 
     try {
       const data = await window.API.getHealth();
-      if (data.status === 'ok') {
-        setStatusOnline(pill);
+      if (data && data.status === 'ok') {
+        pill.className = 'status-pill';
+        pill.innerHTML = '<span class="dot"></span> SYSTEM OPERATIONAL';
       } else {
-        setStatusOffline(pill, 'Degraded');
+        pill.className = 'status-pill offline';
+        pill.innerHTML = '<span class="dot"></span> DEGRADED';
       }
     } catch (_) {
-      setStatusOffline(pill, 'Offline');
+      pill.className = 'status-pill offline';
+      pill.innerHTML = '<span class="dot"></span> BACKEND OFFLINE';
     }
   }
 
-  function setStatusOnline(pill) {
-    pill.className = 'status-pill';
-    pill.innerHTML = '<span class="dot"></span> System Online';
-  }
-
-  function setStatusOffline(pill, label) {
-    pill.className = 'status-pill offline';
-    pill.innerHTML = `<span class="dot"></span> ${label}`;
-  }
-
-  function startHealthPolling(intervalMs = 60_000) {
+  function startHealthPolling(intervalMs = 45_000) {
     checkHealth();
     if (_healthCheckInterval) clearInterval(_healthCheckInterval);
     _healthCheckInterval = setInterval(checkHealth, intervalMs);
   }
 
-  // ── Last-updated display ───────────────────────────────────────────────────
+  // ── Confirmation Modal Dialog ─────────────────────────────────────────────
 
-  function updateLastUpdatedDisplay() {
-    const el = document.getElementById('last-updated-time');
-    if (el) el.textContent = new Date().toLocaleTimeString();
+  function showConfirmationModal({ title, message, confirmText = 'Confirm', onConfirm }) {
+    let backdrop = document.getElementById('confirm-modal-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'confirm-modal-backdrop';
+      backdrop.className = 'modal-backdrop';
+      backdrop.innerHTML = `
+        <div class="modal" style="max-width:480px;">
+          <div class="modal-header">
+            <span id="confirm-modal-title" class="modal-title">⚠️ Confirmation Required</span>
+            <button id="confirm-modal-close" class="modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p id="confirm-modal-msg" style="font-size:14px;color:var(--text-secondary);line-height:1.5;"></p>
+            <div class="modal-confirm-actions">
+              <button id="confirm-btn-cancel" class="btn btn-secondary">Cancel</button>
+              <button id="confirm-btn-action" class="btn btn-primary">Proceed</button>
+            </div>
+          </div>
+        </div>`;
+      document.body.appendChild(backdrop);
+    }
+
+    document.getElementById('confirm-modal-title').textContent = title || 'Confirm Action';
+    document.getElementById('confirm-modal-msg').textContent = message;
+
+    const actionBtn = document.getElementById('confirm-btn-action');
+    actionBtn.textContent = confirmText;
+
+    const close = () => backdrop.classList.remove('open');
+
+    document.getElementById('confirm-modal-close').onclick = close;
+    document.getElementById('confirm-btn-cancel').onclick = close;
+
+    actionBtn.onclick = async () => {
+      close();
+      if (onConfirm) await onConfirm();
+    };
+
+    backdrop.classList.add('open');
   }
 
   // ── DOM Helpers ────────────────────────────────────────────────────────────
-
-  function $(selector, context = document) {
-    return context.querySelector(selector);
-  }
-
-  function $$(selector, context = document) {
-    return Array.from(context.querySelectorAll(selector));
-  }
-
-  function setTextContent(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  }
-
-  function show(el) {
-    if (el) el.style.display = '';
-  }
-
-  function hide(el) {
-    if (el) el.style.display = 'none';
-  }
-
-  function formatTimestamp(isoString) {
-    if (!isoString) return '—';
-    try {
-      return new Date(isoString).toLocaleString();
-    } catch (_) {
-      return isoString;
-    }
-  }
-
-  function formatRelativeTime(isoString) {
-    if (!isoString) return '—';
-    const now = Date.now();
-    const then = new Date(isoString).getTime();
-    const diffMs = now - then;
-    const diffMin = Math.round(diffMs / 60_000);
-
-    if (diffMin < 1) return 'Just now';
-    if (diffMin < 60) return `${diffMin}m ago`;
-    const diffH = Math.round(diffMin / 60);
-    if (diffH < 24) return `${diffH}h ago`;
-    const diffD = Math.round(diffH / 24);
-    return `${diffD}d ago`;
-  }
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -183,8 +179,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
-
-  // ── Status → CSS class ─────────────────────────────────────────────────────
 
   function statusBadgeClass(status) {
     const map = {
@@ -196,48 +190,36 @@
     return map[status] || 'badge-default';
   }
 
-  function incidentPillClass(type) {
-    const map = {
-      'Road Flooding':        'incident-road-flooding',
-      'Structural Damage':    'incident-structural-damage',
-      'Power Outage':         'incident-power-outage',
-      'Medical Emergency':    'incident-medical-emergency',
-      'Evacuation Needed':    'incident-evacuation-needed',
-      'Water Contamination':  'incident-water-contamination',
-    };
-    return map[type] || '';
+  function formatTimestamp(isoString) {
+    if (!isoString) return '—';
+    try {
+      return new Date(isoString).toLocaleString();
+    } catch (_) {
+      return isoString;
+    }
   }
 
   // ── Initialisation ─────────────────────────────────────────────────────────
 
   function init() {
     initRoleSelector();
+    initNavHighlighting();
     startHealthPolling();
-    updateLastUpdatedDisplay();
   }
 
-  // Run when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
 
-  // ── Exports ────────────────────────────────────────────────────────────────
   window.APP = {
     showToast,
     getCurrentRole,
     checkHealth,
-    updateLastUpdatedDisplay,
-    $,
-    $$,
-    setTextContent,
-    show,
-    hide,
-    formatTimestamp,
-    formatRelativeTime,
+    showConfirmationModal,
     escapeHtml,
     statusBadgeClass,
-    incidentPillClass,
+    formatTimestamp,
   };
 })();

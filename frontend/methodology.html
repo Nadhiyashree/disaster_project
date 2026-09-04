@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Detailed system methodology, scoring engine formulas, governance rules, and privacy guarantees." />
+  <title>System Methodology — Disaster Response System</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="header" role="banner">
+    <div class="header-brand">
+      <div class="header-icon" aria-hidden="true">🚨</div>
+      <div class="header-title-group">
+        <div class="header-title">DISASTER RESPONSE COMMAND CENTER</div>
+        <div class="header-subtitle">System Methodology &amp; Engine Documentation</div>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div id="system-status" class="status-pill" role="status" aria-live="polite">
+        <span class="dot"></span> SYSTEM OPERATIONAL
+      </div>
+
+      <div class="role-selector">
+        <label for="role-select">Role:</label>
+        <select id="role-select" aria-label="Select your operational role">
+          <option value="Responder">Responder</option>
+          <option value="City Official">City Official</option>
+          <option value="Coordinator">Coordinator</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Persistent Navigation Bar ───────────────────────────────────── -->
+  <nav class="main-nav" aria-label="Main Navigation">
+    <a href="/dashboard.html" class="nav-link">🖥️ Command Center</a>
+    <a href="/reports.html" class="nav-link">📋 Reports</a>
+    <a href="/dashboard.html#map-container" class="nav-link">🗺️ Map View</a>
+    <a href="/analytics.html" class="nav-link">📊 Analytics</a>
+    <a href="/methodology.html" class="nav-link active">📖 Methodology</a>
+  </nav>
+
+  <!-- ── Main Content ────────────────────────────────────────────────────── -->
+  <main class="main-content">
+    <div class="methodology-grid">
+
+      <!-- 1. System Overview -->
+      <div class="section-card">
+        <div class="section-title">🏛️ 1. Problem Statement &amp; System Architecture</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          During major municipal disasters, emergency command centers face an overwhelming influx of unverified crowd reports across multiple channels. The Disaster Response Verification Engine provides a transparent, rule-based decision-support system that processes crowd reports, evaluates evidence quality, quantifies operational priority, flags conflicting claims, and assists human emergency dispatchers.
+        </p>
+        
+        <div class="formula-box">
+          Disaster Reports (CSV) → Evidence Processing → Confidence Engine → Freshness Engine → Priority Engine → Conflict Detection → Duplicate Clustering → Triage Queue → Human Verification
+        </div>
+      </div>
+
+      <!-- 2. Confidence Score Engine -->
+      <div class="section-card">
+        <div class="section-title">🛡️ 2. Confidence Engine Formula</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          The Confidence Score estimates how trustworthy a report is based on verifiable evidence (0–100 scale). It combines six transparently weighted criteria:
+        </p>
+
+        <div class="formula-box">
+          Confidence = 0.15 × SourceReliability + 0.25 × Corroboration + 0.15 × Freshness<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.10 × LocationPrecision + 0.15 × MediaEvidence + 0.20 × ResponderVerification
+        </div>
+
+        <table class="explanation-table">
+          <thead>
+            <tr>
+              <th>Criteria</th>
+              <th>Weight</th>
+              <th>Scoring Mapping</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Source Reliability</td>
+              <td>15%</td>
+              <td>Field Responder (1.00), Dept Report (0.95), Emergency Call (0.90), Sensor (0.85), Citizen Report (0.40)</td>
+            </tr>
+            <tr>
+              <td>Corroboration</td>
+              <td>25%</td>
+              <td>0 independent reports (0.00), 1–2 (0.50), 3–4 (0.75), 5+ (1.00)</td>
+            </tr>
+            <tr>
+              <td>Freshness</td>
+              <td>15%</td>
+              <td>Fresh (1.00), Aging (0.75), Old (0.45), Stale (0.20), Missing/Future (0.00)</td>
+            </tr>
+            <tr>
+              <td>Location Precision</td>
+              <td>10%</td>
+              <td>Exact (1.00), High (0.80), Medium (0.60), Low (0.30), Unknown (0.00)</td>
+            </tr>
+            <tr>
+              <td>Media Evidence</td>
+              <td>15%</td>
+              <td>Photo (1.00), Video (1.00), Audio (0.70), None / Unavailable (0.00)</td>
+            </tr>
+            <tr>
+              <td>Responder Verification</td>
+              <td>20%</td>
+              <td>Verified (1.00), Needs Review (0.50), Pending (0.25), Rejected (0.00)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3. Confidence Cap -->
+      <div class="section-card">
+        <div class="section-title">🔒 3. Confidence Cap Rule</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          To prevent single unverified rumors from surfacing as High or Very High confidence based on recency alone, a mandatory confidence cap is enforced:
+        </p>
+        <div class="formula-box">
+          IF Source = "Citizen Report" AND Independent Corroboration = 0 AND Media = None/Unavailable AND Verification = Pending/Needs Review<br />
+          THEN Confidence Score is CAPPED at 69.0 (Medium Category).
+        </div>
+        <p class="text-muted text-xs">
+          Note: Missing media or lack of corroboration is NOT treated as proof that a report is false. It simply indicates that human verification is recommended.
+        </p>
+      </div>
+
+      <!-- 4. Priority Score Engine -->
+      <div class="section-card">
+        <div class="section-title">⚡ 4. Priority Score Engine &amp; Urgency Triage</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          Priority answers: <em>"Which incident should emergency responders inspect first?"</em> Priority is distinct from Confidence:
+        </p>
+
+        <div class="formula-box">
+          Priority = 0.35 × IncidentSeverity + 0.30 × ConfidenceScore + 0.20 × FreshnessUrgency + 0.15 × OperationalUrgency
+        </div>
+
+        <div class="callout-box">
+          <div class="callout-icon">💡</div>
+          <div>
+            <div class="callout-title">KEY PRINCIPLE: CONFIDENCE ≠ PRIORITY</div>
+            <div class="callout-body">
+              Reports concerning severe hazards (e.g., <em>Evacuation Needed</em> or <em>Medical Emergency</em>) receive high priority scores even if confidence is initially low. This ensures that unverified high-risk life-safety incidents are immediately flagged for human verification rather than ignored.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Freshness Rules -->
+      <div class="section-card">
+        <div class="section-title">⏳ 5. Freshness Engine Rules</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          Freshness tracks the temporal decay of crowd observation relevance:
+        </p>
+        <table class="explanation-table">
+          <thead>
+            <tr>
+              <th>Time Window</th>
+              <th>Freshness Score</th>
+              <th>Freshness State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0 – 15 minutes</td><td>1.00</td><td>Fresh</td></tr>
+            <tr><td>15 – 120 minutes</td><td>0.75</td><td>Aging</td></tr>
+            <tr><td>2 – 6 hours</td><td>0.45</td><td>Old</td></tr>
+            <tr><td>&gt; 6 hours</td><td>0.20</td><td>Stale</td></tr>
+            <tr><td>Missing or Future Timestamp</td><td>0.00</td><td>Unknown</td></tr>
+          </tbody>
+        </table>
+        <p class="text-muted text-xs" style="margin-top:8px;">
+          Stale reports remain visible in all views and are never hidden automatically.
+        </p>
+      </div>
+
+      <!-- 6. Conflict & Duplicate Clustering -->
+      <div class="section-card">
+        <div class="section-title">⚔️ 6. Conflict &amp; Duplicate Clustering Engine</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          <strong>Duplicate Clustering:</strong> Near-identical observations occurring in close spatial proximity (&le; 0.5 km) and time window (&le; 3 hours) are grouped into a correlation cluster. Correlated reports are discounted when calculating independent corroboration to prevent multiple duplicate reports from artificially inflating confidence.
+        </p>
+        <p class="text-secondary text-sm" style="line-height:1.6;margin-top:8px;">
+          <strong>Conflict Detection:</strong> Proximal reports claiming opposing operational conditions (e.g. <em>Road completely blocked</em> vs <em>Road passable</em>) or conflicting verification statuses are flagged neutrally with: <code>"Conflicting observations detected. Human verification recommended."</code>
+        </p>
+      </div>
+
+      <!-- 7. Human Verification & Stakeholder Roles -->
+      <div class="section-card">
+        <div class="section-title">👨‍🚒 7. Human Verification &amp; Operational Roles</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          The system operates strictly as a <strong>human-in-the-loop decision-support tool</strong>. No automated enforcement, permit rejection, or emergency vehicle deployment is ever executed automatically.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;margin-top:12px;">
+          <div style="background:var(--bg-input);padding:12px;border-radius:6px;border:1px solid var(--border);">
+            <strong style="color:var(--text-primary);">🚨 Responder Role</strong>
+            <p class="text-xs text-muted" style="margin-top:4px;">Emphasizes high recall, fresh reports, and the urgent Priority Queue for fast initial triage.</p>
+          </div>
+          <div style="background:var(--bg-input);padding:12px;border-radius:6px;border:1px solid var(--border);">
+            <strong style="color:var(--text-primary);">🏛️ City Official Role</strong>
+            <p class="text-xs text-muted" style="margin-top:4px;">Emphasizes high precision, verified evidence quality, and departmental oversight.</p>
+          </div>
+          <div style="background:var(--bg-input);padding:12px;border-radius:6px;border:1px solid var(--border);">
+            <strong style="color:var(--text-primary);">⚖️ Coordinator Role</strong>
+            <p class="text-xs text-muted" style="margin-top:4px;">Emphasizes conflict resolution, verification gaps, and citywide resource allocation.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Privacy & System Governance -->
+      <div class="section-card" style="border-color:var(--accent-success);">
+        <div class="section-title">🔒 8. Privacy Guarantees &amp; System Governance</div>
+        <p class="text-secondary text-sm" style="line-height:1.6;">
+          The Disaster Response Command System strictly adheres to the following privacy and ethical governance rules:
+        </p>
+        <ul style="color:var(--text-secondary);font-size:13px;line-height:1.8;margin-left:20px;margin-top:8px;">
+          <li>❌ <strong>No Citizen Reputation Scores:</strong> All citizen reports use the exact same baseline source reliability (0.40).</li>
+          <li>❌ <strong>No Individual Profiling:</strong> No user tracking, behavioral profiling, or personal identity scoring.</li>
+          <li>❌ <strong>No IP Tracking or Device Fingerprinting:</strong> Duplicate detection relies solely on spatial and temporal report coordinates.</li>
+          <li>❌ <strong>No Continuous Tracking:</strong> Citizens are never continuously tracked or monitored.</li>
+          <li>❌ <strong>No Automatic Enforcement:</strong> All verification and resource dispatch decisions remain 100% human-authorized.</li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <span class="footer-text">
+      Disaster Response Command Center &bull; Decision-support platform — human verification required before all operational actions.
+    </span>
+  </footer>
+
+</div>
+
+<!-- Scripts -->
+<script src="/static/js/api.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

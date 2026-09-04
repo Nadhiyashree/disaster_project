@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Disaster Response Command Center — Phase 2 real-time crowd-report verification and priority intelligence dashboard." />
-  <title>Operations Dashboard — Disaster Response Command Center</title>
+  <meta name="description" content="Disaster Response Command Center — real-time crowd-report verification and priority intelligence dashboard." />
+  <title>Command Center — Disaster Response System</title>
 
   <!-- Fonts & Leaflet -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
@@ -21,72 +21,77 @@
     <div class="header-brand">
       <div class="header-icon" aria-hidden="true">🚨</div>
       <div class="header-title-group">
-        <div class="header-title">Disaster Response Command Center</div>
-        <div class="header-subtitle">Verification &amp; Priority Intelligence Engine (Phase 2)</div>
+        <div class="header-title">DISASTER RESPONSE COMMAND CENTER</div>
+        <div class="header-subtitle">Crowd-Report Verification &amp; Confidence Dashboard</div>
       </div>
     </div>
 
     <div class="header-controls">
-      <!-- System status -->
       <div id="system-status" class="status-pill" role="status" aria-live="polite">
-        <span class="dot"></span> System Ready
+        <span class="dot"></span> SYSTEM OPERATIONAL
       </div>
 
-      <!-- Last updated -->
       <div class="last-updated" aria-live="polite">
         Updated: <strong id="last-updated-time">—</strong>
       </div>
 
-      <!-- Role selector -->
       <div class="role-selector">
-        <label for="role-select">Role View:</label>
+        <label for="role-select">Role:</label>
         <select id="role-select" aria-label="Select your operational role">
-          <option value="Responder">Responder (Operational Triage)</option>
-          <option value="City Official">City Official (Evidence &amp; Dept)</option>
-          <option value="Coordinator">Coordinator (Conflicts &amp; Gaps)</option>
+          <option value="Responder">Responder</option>
+          <option value="City Official">City Official</option>
+          <option value="Coordinator">Coordinator</option>
         </select>
       </div>
 
-      <!-- Refresh -->
       <button id="btn-refresh" class="btn btn-secondary btn-sm" aria-label="Refresh all data">
         ↻ Refresh
       </button>
     </div>
   </header>
 
+  <!-- ── Persistent Global Navigation Bar ─────────────────────────────── -->
+  <nav class="main-nav" aria-label="Main Navigation">
+    <a href="/dashboard.html" class="nav-link active">🖥️ Command Center</a>
+    <a href="/reports.html" class="nav-link">📋 Reports</a>
+    <a href="/dashboard.html#map-container" class="nav-link">🗺️ Map View</a>
+    <a href="/analytics.html" class="nav-link">📊 Analytics</a>
+    <a href="/methodology.html" class="nav-link">📖 Methodology</a>
+  </nav>
+
   <!-- ── Main Content ────────────────────────────────────────────────────── -->
   <main class="main-content" id="main-content">
 
-    <!-- KPI Cards -->
+    <!-- KPI CARDS -->
     <section aria-label="Key Performance Indicators" class="section-gap">
-      <div class="kpi-grid" style="grid-template-columns: repeat(6, 1fr);">
+      <div class="kpi-grid">
 
         <div class="kpi-card kpi-total" role="region" aria-label="Total Reports">
           <div class="kpi-icon" aria-hidden="true">📊</div>
           <div class="kpi-label">Total Reports</div>
           <div id="kpi-total" class="kpi-value loading-val">—</div>
-          <div class="kpi-meta">Loaded in dataset</div>
+          <div class="kpi-meta">All incidents in dataset</div>
         </div>
 
         <div class="kpi-card kpi-verified" role="region" aria-label="Verified Reports">
           <div class="kpi-icon" aria-hidden="true">✅</div>
           <div class="kpi-label">Verified</div>
           <div id="kpi-verified" class="kpi-value loading-val">—</div>
-          <div class="kpi-meta">Confirmed by verifiers</div>
+          <div class="kpi-meta">Confirmed by responders</div>
         </div>
 
-        <div class="kpi-card kpi-critical" role="region" aria-label="Critical Priority">
+        <div class="kpi-card kpi-critical" role="region" aria-label="Critical Reports">
           <div class="kpi-icon" aria-hidden="true">🚨</div>
-          <div class="kpi-label">Critical Priority</div>
+          <div class="kpi-label">Critical Reports</div>
           <div id="kpi-critical" class="kpi-value loading-val">—</div>
-          <div class="kpi-meta">Immediate triage needed</div>
+          <div class="kpi-meta">Urgent triage needed</div>
         </div>
 
-        <div class="kpi-card kpi-pending" role="region" aria-label="High Priority">
+        <div class="kpi-card kpi-pending" role="region" aria-label="High-Priority Reports">
           <div class="kpi-icon" aria-hidden="true">⚠️</div>
-          <div class="kpi-label">High Priority</div>
+          <div class="kpi-label">High-Priority</div>
           <div id="kpi-high-priority" class="kpi-value loading-val">—</div>
-          <div class="kpi-meta">Critical or High priority</div>
+          <div class="kpi-meta">Critical or High score</div>
         </div>
 
         <div class="kpi-card kpi-stale" role="region" aria-label="Stale Reports">
@@ -106,238 +111,118 @@
       </div>
     </section>
 
-    <!-- Map + Activity Feed -->
+    <!-- EDUCATIONAL CALLOUT: CONFIDENCE ≠ PRIORITY -->
+    <div class="callout-box">
+      <div class="callout-icon">💡</div>
+      <div>
+        <div class="callout-title">OPERATIONAL CONCEPT: CONFIDENCE ≠ PRIORITY</div>
+        <div class="callout-body">
+          <strong>Confidence</strong> estimates how trustworthy the report's evidence is (0–100).
+          <strong>Priority</strong> estimates how urgently responders should inspect the report.
+          A high-severity incident (such as <em>Evacuation Needed</em> or <em>Medical Emergency</em>) with low initial confidence will still surface near the top of the queue for human verification.
+        </div>
+      </div>
+    </div>
+
+    <!-- RESPONSE STRATEGY THRESHOLD PANEL -->
+    <div class="strategy-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <span style="font-weight:700;font-size:14px;color:var(--text-primary);">OPERATIONAL STRATEGY THRESHOLD</span>
+          <p class="text-xs text-muted">Adjust decision-support sensitivity based on responder role &amp; resource availability</p>
+        </div>
+        <span id="active-strategy-label" class="badge badge-primary">Responder (High Recall)</span>
+      </div>
+
+      <div class="threshold-grid">
+        <div class="threshold-option active" id="strategy-responder" onclick="selectStrategy('Responder', 0.30)">
+          <div class="threshold-title">🚨 Responder Mode</div>
+          <div class="threshold-val">Threshold: 0.30</div>
+          <div class="threshold-desc">Surfaces more reports (High Recall). Minimal risk of missing urgent threats.</div>
+        </div>
+
+        <div class="threshold-option" id="strategy-balanced" onclick="selectStrategy('Balanced', 0.50)">
+          <div class="threshold-title">⚖️ Balanced Mode</div>
+          <div class="threshold-val">Threshold: 0.50</div>
+          <div class="threshold-desc">Balanced trade-off between speed, evidence quality, and false positive management.</div>
+        </div>
+
+        <div class="threshold-option" id="strategy-official" onclick="selectStrategy('City Official', 0.65)">
+          <div class="threshold-title">🏛️ Official Mode</div>
+          <div class="threshold-val">Threshold: 0.65</div>
+          <div class="threshold-desc">Higher confidence threshold (High Precision). Minimizes false alarms for city leaders.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRIORITY QUEUE + MAP SPLIT VIEW -->
     <div class="split-layout section-gap">
 
-      <!-- Map Panel -->
+      <!-- PRIORITY RESPONSE QUEUE -->
+      <section class="panel" aria-label="Priority Response Queue" id="priority-queue-section">
+        <div class="panel-header">
+          <span class="panel-title"><span class="icon" aria-hidden="true">🔥</span> PRIORITY RESPONSE QUEUE</span>
+          <span class="text-xs text-muted">Sorted by Priority Score DESC</span>
+        </div>
+        <div class="table-wrapper">
+          <table class="report-table" aria-label="Priority queue table">
+            <thead>
+              <tr>
+                <th scope="col">Report ID</th>
+                <th scope="col">Incident</th>
+                <th scope="col">Zone</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Confidence</th>
+                <th scope="col">Freshness</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="priority-queue-table-body">
+              <tr>
+                <td colspan="7">
+                  <div class="state-container">
+                    <div class="spinner"></div>
+                    <span class="state-desc">Loading priority queue…</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- INCIDENT MAP -->
       <section class="panel" aria-label="Incident Map" id="map-container">
         <div class="panel-header">
           <span class="panel-title"><span class="icon" aria-hidden="true">🗺️</span> Incident Map</span>
-          <span class="text-xs text-muted">Markers styled by Priority Score — click for popup details</span>
+          <span class="text-xs text-muted">Click markers for details</span>
         </div>
-        <div id="map-loading" class="map-loading" aria-live="polite" role="status">
+        <div id="map-loading" class="map-loading" aria-live="polite">
           <div class="spinner"></div>
-          Loading map markers…
+          Loading map…
         </div>
-        <div id="map-error" class="map-error" style="display:none" role="alert">
+        <div id="map-error" class="map-error" style="display:none">
           ⚠️ Map failed to load
         </div>
-        <div id="incident-map" role="application" aria-label="Interactive incident location map"></div>
-      </section>
-
-      <!-- Activity Feed -->
-      <section class="panel" aria-label="Recent Activity">
-        <div class="panel-header">
-          <span class="panel-title"><span class="icon" aria-hidden="true">⚡</span> Recent Activity</span>
-          <span class="text-xs text-muted">Last 10 updated reports</span>
-        </div>
-        <div class="panel-body" style="padding:8px 0;">
-          <div id="activity-list" role="list" aria-label="Recent report activity">
-            <div class="state-container" style="padding:24px">
-              <div class="spinner"></div>
-              <span class="state-desc">Loading activity feed…</span>
-            </div>
-          </div>
-        </div>
+        <div id="incident-map" role="application"></div>
       </section>
 
     </div>
 
-    <!-- ── PRIORITY RESPONSE QUEUE SECTION ───────────────────────────── -->
-    <section class="panel section-gap" aria-label="Priority Response Queue" id="priority-queue-section">
-      <div class="panel-header" style="background:var(--bg-card);border-bottom:2px solid var(--accent-primary);">
-        <span class="panel-title" style="font-size:16px;color:var(--text-primary);">
-          <span class="icon" aria-hidden="true">🔥</span> PRIORITY RESPONSE QUEUE
-        </span>
-        <span class="text-xs text-muted">Top urgent incidents sorted by Priority Score (DESC)</span>
-      </div>
-
-      <div class="table-wrapper">
-        <table class="report-table" aria-label="Priority response queue table">
-          <thead>
-            <tr>
-              <th scope="col">Report ID</th>
-              <th scope="col">Incident</th>
-              <th scope="col">Zone</th>
-              <th scope="col">Priority</th>
-              <th scope="col">Confidence</th>
-              <th scope="col">Freshness</th>
-              <th scope="col">Corroboration</th>
-              <th scope="col">Verification</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody id="priority-queue-table-body">
-            <tr>
-              <td colspan="9">
-                <div class="state-container">
-                  <div class="spinner" aria-label="Loading priority queue"></div>
-                  <span class="state-desc">Calculating priority scores &amp; sorting queue…</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ── FULL DISASTER REPORTS TABLE PANEL ───────────────────────────── -->
-    <section class="panel" aria-label="Disaster Reports Table" id="reports-section">
+    <!-- RECENT ACTIVITY FEED -->
+    <section class="panel" aria-label="Recent Activity">
       <div class="panel-header">
-        <span class="panel-title"><span class="icon" aria-hidden="true">📋</span> Master Reports Triage</span>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button id="btn-clear-filters" class="btn btn-ghost btn-sm" aria-label="Clear all filters">
-            ✕ Clear Filters
-          </button>
-        </div>
+        <span class="panel-title"><span class="icon" aria-hidden="true">⚡</span> Recent Activity Feed</span>
+        <span class="text-xs text-muted">Last 10 updated reports</span>
       </div>
-
-      <!-- Filters Bar -->
-      <div class="filters-bar" role="search" aria-label="Report filters">
-
-        <div class="filter-group">
-          <label for="filter-search">Search:</label>
-          <div class="search-wrapper">
-            <span class="search-icon" aria-hidden="true">🔍</span>
-            <input
-              id="filter-search"
-              type="search"
-              class="search-input with-icon"
-              placeholder="ID, zone, incident, desc…"
-              aria-label="Search reports"
-              autocomplete="off"
-            />
+      <div class="panel-body" style="padding:8px 0;">
+        <div id="activity-list" role="list">
+          <div class="state-container" style="padding:24px">
+            <div class="spinner"></div>
+            <span class="state-desc">Loading activity…</span>
           </div>
         </div>
-
-        <div class="filter-group">
-          <label for="filter-incident">Incident:</label>
-          <select id="filter-incident" class="filter-select" aria-label="Filter by incident type">
-            <option value="">All Types</option>
-            <option value="Road Flooding">Road Flooding</option>
-            <option value="Structural Damage">Structural Damage</option>
-            <option value="Power Outage">Power Outage</option>
-            <option value="Medical Emergency">Medical Emergency</option>
-            <option value="Evacuation Needed">Evacuation Needed</option>
-            <option value="Water Contamination">Water Contamination</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-zone">Zone:</label>
-          <select id="filter-zone" class="filter-select" aria-label="Filter by zone">
-            <option value="">All Zones</option>
-            <option value="North District">North District</option>
-            <option value="South District">South District</option>
-            <option value="East District">East District</option>
-            <option value="West District">West District</option>
-            <option value="Central District">Central District</option>
-            <option value="Riverside">Riverside</option>
-            <option value="Industrial Zone">Industrial Zone</option>
-            <option value="Old Town">Old Town</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-priority">Priority:</label>
-          <select id="filter-priority" class="filter-select" aria-label="Filter by priority category">
-            <option value="">All Priorities</option>
-            <option value="Critical">Critical</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-confidence">Confidence:</label>
-          <select id="filter-confidence" class="filter-select" aria-label="Filter by confidence category">
-            <option value="">All Confidence</option>
-            <option value="Very High">Very High</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-freshness">Freshness:</label>
-          <select id="filter-freshness" class="filter-select" aria-label="Filter by freshness state">
-            <option value="">All Freshness</option>
-            <option value="Fresh">Fresh (0-15m)</option>
-            <option value="Aging">Aging (15-120m)</option>
-            <option value="Old">Old (2-6h)</option>
-            <option value="Stale">Stale (&gt;6h)</option>
-            <option value="Unknown">Unknown</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-status">Status:</label>
-          <select id="filter-status" class="filter-select" aria-label="Filter by verification status">
-            <option value="">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="Verified">Verified</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Needs Review">Needs Review</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-conflict">Conflict:</label>
-          <select id="filter-conflict" class="filter-select" aria-label="Filter by conflict">
-            <option value="">All</option>
-            <option value="true">Conflict Only</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-correlation">Correlated:</label>
-          <select id="filter-correlation" class="filter-select" aria-label="Filter by correlation">
-            <option value="">All</option>
-            <option value="true">Correlated Only</option>
-          </select>
-        </div>
-
       </div>
-
-      <!-- Table -->
-      <div class="table-wrapper" id="table-content-area">
-        <table class="report-table" aria-label="Disaster reports data table">
-          <thead>
-            <tr>
-              <th scope="col">Report ID</th>
-              <th scope="col">Incident</th>
-              <th scope="col">Zone</th>
-              <th scope="col">Priority</th>
-              <th scope="col">Confidence</th>
-              <th scope="col">Freshness</th>
-              <th scope="col">Status</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody id="report-table-body">
-            <tr>
-              <td colspan="8">
-                <div class="state-container">
-                  <div class="spinner" aria-label="Loading reports"></div>
-                  <span class="state-desc">Loading master report records…</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <nav class="pagination" aria-label="Table pagination">
-        <span id="pagination-info" class="pagination-info" aria-live="polite">—</span>
-        <div class="pagination-controls">
-          <button id="btn-prev" class="page-btn" disabled aria-label="Previous page">← Prev</button>
-          <div id="pagination-pages" class="pagination-controls" role="group" aria-label="Page numbers"></div>
-          <button id="btn-next" class="page-btn" disabled aria-label="Next page">Next →</button>
-        </div>
-      </nav>
     </section>
 
   </main>
@@ -345,11 +230,11 @@
   <!-- ── Footer ─────────────────────────────────────────────────────────── -->
   <footer class="footer" role="contentinfo">
     <span class="footer-text">
-      Disaster Response Command Center &bull; Phase 2 &bull;
-      Human-in-the-loop decision-support system — human verification required before all actions.
+      Disaster Response Command Center &bull; Decision-Support System — Human verification required before emergency deployment.
     </span>
     <div class="footer-links">
-      <a href="/api/metrics" target="_blank" rel="noopener">API Metrics</a>
+      <a href="/analytics.html">Analytics</a>
+      <a href="/methodology.html">Methodology</a>
       <a href="/docs" target="_blank" rel="noopener">API Docs</a>
       <a href="/api/health" target="_blank" rel="noopener">Health</a>
     </div>
@@ -357,7 +242,7 @@
 
 </div>
 
-<!-- ── Scripts ────────────────────────────────────────────────────────── -->
+<!-- Scripts -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN2GqBk=" crossorigin=""></script>
 <script src="/static/js/api.js"></script>
@@ -368,6 +253,18 @@
 <script>
   function viewReportDetails(id) {
     window.location.href = `/report-details.html?id=${encodeURIComponent(id)}`;
+  }
+
+  function selectStrategy(name, threshold) {
+    document.querySelectorAll('.threshold-option').forEach(el => el.classList.remove('active'));
+    if (name === 'Responder') document.getElementById('strategy-responder').classList.add('active');
+    else if (name === 'Balanced') document.getElementById('strategy-balanced').classList.add('active');
+    else if (name === 'City Official') document.getElementById('strategy-official').classList.add('active');
+
+    document.getElementById('active-strategy-label').textContent = `${name} Mode (${threshold.toFixed(2)})`;
+    if (window.APP && window.APP.showToast) {
+      window.APP.showToast(`Operational Strategy set to: ${name} (Threshold: ${threshold})`, 'info');
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {

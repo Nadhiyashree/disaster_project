@@ -93,12 +93,22 @@ async def root() -> FileResponse:
     return JSONResponse({"message": "Disaster Response Dashboard API (Phase 2)", "docs": "/docs"})
 
 
+@app.get("/dashboard.html", include_in_schema=False)
 @app.get("/dashboard", include_in_schema=False)
 async def dashboard_page() -> FileResponse:
     page = _FRONTEND_DIR / "dashboard.html"
     if page.exists():
         return FileResponse(str(page))
     raise HTTPException(status_code=404, detail="Dashboard page not found.")
+
+
+@app.get("/reports.html", include_in_schema=False)
+@app.get("/reports", include_in_schema=False)
+async def reports_page() -> FileResponse:
+    page = _FRONTEND_DIR / "reports.html"
+    if page.exists():
+        return FileResponse(str(page))
+    raise HTTPException(status_code=404, detail="Reports page not found.")
 
 
 @app.get("/report-details.html", include_in_schema=False)
@@ -108,6 +118,24 @@ async def report_details_page() -> FileResponse:
     if page.exists():
         return FileResponse(str(page))
     raise HTTPException(status_code=404, detail="Report details page not found.")
+
+
+@app.get("/analytics.html", include_in_schema=False)
+@app.get("/analytics", include_in_schema=False)
+async def analytics_page() -> FileResponse:
+    page = _FRONTEND_DIR / "analytics.html"
+    if page.exists():
+        return FileResponse(str(page))
+    raise HTTPException(status_code=404, detail="Analytics page not found.")
+
+
+@app.get("/methodology.html", include_in_schema=False)
+@app.get("/methodology", include_in_schema=False)
+async def methodology_page() -> FileResponse:
+    page = _FRONTEND_DIR / "methodology.html"
+    if page.exists():
+        return FileResponse(str(page))
+    raise HTTPException(status_code=404, detail="Methodology page not found.")
 
 
 # ---------------------------------------------------------------------------

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Detailed evidence, confidence breakdown, priority analysis, conflict detection, and human verification triage." />
-  <title>Report Details — Disaster Response Command Center</title>
+  <meta name="description" content="Detailed evidence review, confidence breakdown, priority analysis, conflict detection, and human verification triage." />
+  <title>Report Details — Disaster Response System</title>
 
   <!-- Fonts & Leaflet CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
@@ -51,55 +51,67 @@
       flex-wrap: wrap;
       margin-top: 12px;
     }
-    .verify-btn {
-      padding: 8px 16px;
-      border-radius: var(--border-radius);
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 180ms ease;
-    }
-    .verify-btn.active {
-      box-shadow: 0 0 12px currentColor;
-    }
   </style>
 </head>
 <body>
 <div class="app-layout">
 
-  <!-- Header -->
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
   <header class="header" role="banner">
     <div class="header-brand">
-      <a href="/dashboard" class="btn btn-ghost btn-sm">← Back to Dashboard</a>
+      <div class="header-icon" aria-hidden="true">🚨</div>
       <div class="header-title-group">
-        <div class="header-title">Report Intelligence Triage</div>
-        <div class="header-subtitle">Explainable Evidence &amp; Verification Breakdown</div>
+        <div class="header-title">DISASTER RESPONSE COMMAND CENTER</div>
+        <div class="header-subtitle">Report Evidence Triage &amp; Human Verification</div>
       </div>
     </div>
+
     <div class="header-controls">
+      <div id="system-status" class="status-pill" role="status" aria-live="polite">
+        <span class="dot"></span> SYSTEM OPERATIONAL
+      </div>
+
+      <div class="role-selector">
+        <label for="role-select">Role:</label>
+        <select id="role-select" aria-label="Select your operational role">
+          <option value="Responder">Responder</option>
+          <option value="City Official">City Official</option>
+          <option value="Coordinator">Coordinator</option>
+        </select>
+      </div>
+
       <span id="report-id-badge" class="badge badge-default text-mono" style="font-size:14px;padding:6px 12px;">Loading...</span>
     </div>
   </header>
 
-  <!-- Main Content -->
+  <!-- ── Persistent Global Navigation Bar ─────────────────────────────── -->
+  <nav class="main-nav" aria-label="Main Navigation">
+    <a href="/dashboard.html" class="nav-link">🖥️ Command Center</a>
+    <a href="/reports.html" class="nav-link">📋 Reports</a>
+    <a href="/report-details.html" class="nav-link active">🔍 Report Details</a>
+    <a href="/analytics.html" class="nav-link">📊 Analytics</a>
+    <a href="/methodology.html" class="nav-link">📖 Methodology</a>
+  </nav>
+
+  <!-- ── Main Content ────────────────────────────────────────────────────── -->
   <main class="main-content">
     <div class="details-container">
 
-      <!-- Top Banners / Alerts -->
+      <!-- Top Alert Banners -->
       <div id="alert-container"></div>
 
       <!-- 1. Report Summary Card -->
       <div class="section-card">
         <div class="section-title">📋 Report Summary</div>
         <div class="report-detail-grid" id="summary-grid">
-          <div class="state-container"><div class="spinner"></div> Loading report data...</div>
+          <div class="state-container"><div class="spinner"></div> Loading report details...</div>
         </div>
       </div>
 
-      <!-- 2. Dual Gauge Scores (Confidence & Priority) -->
+      <!-- 2. Score Gauge Cards (Confidence & Priority) -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-lg);margin-bottom:var(--space-lg);">
         
-        <!-- Confidence Gauge Card -->
+        <!-- Confidence Gauge -->
         <div class="metric-gauge-card">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-weight:700;color:var(--text-secondary);font-size:12px;text-transform:uppercase;">Confidence Score</span>
@@ -110,11 +122,11 @@
             <div id="conf-progress-fill" class="progress-bar-fill bg-low" style="width:0%"></div>
           </div>
           <div id="conf-capped-notice" style="font-size:12px;color:var(--accent-warning);display:none;margin-top:4px;">
-            ⚠️ Confidence score capped
+            ⚠️ Confidence score capped due to uncorroborated single citizen source
           </div>
         </div>
 
-        <!-- Priority Gauge Card -->
+        <!-- Priority Gauge -->
         <div class="metric-gauge-card">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-weight:700;color:var(--text-secondary);font-size:12px;text-transform:uppercase;">Priority Score</span>
@@ -131,9 +143,22 @@
 
       </div>
 
-      <!-- 3. Why Trusted (Confidence Breakdown) -->
+      <!-- Educational Callout -->
+      <div class="callout-box">
+        <div class="callout-icon">💡</div>
+        <div>
+          <div class="callout-title">CONFIDENCE ≠ PRIORITY</div>
+          <div class="callout-body">
+            <strong>Confidence</strong> measures evidence quality and trustworthiness (0–100).
+            <strong>Priority</strong> measures operational urgency for responder dispatch.
+            Reports concerning severe hazards (e.g. chemical spills or collapses) can have high priority even if confidence is low, indicating urgent human verification is required.
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Why Trusted Section -->
       <div class="section-card">
-        <div class="section-title">🛡️ Why This Report Received This Confidence</div>
+        <div class="section-title">🛡️ WHY THIS REPORT RECEIVED THIS CONFIDENCE</div>
         <p id="conf-summary-text" class="text-secondary text-sm" style="margin-bottom:16px;">—</p>
         
         <table class="explanation-table">
@@ -151,9 +176,9 @@
         </table>
       </div>
 
-      <!-- 4. Why Prioritized (Priority Breakdown) -->
+      <!-- 4. Why Prioritized Section -->
       <div class="section-card">
-        <div class="section-title">⚡ Why This Report Was Prioritized</div>
+        <div class="section-title">⚡ WHY THIS REPORT WAS PRIORITIZED</div>
         <div id="prio-explanation-text" style="white-space:pre-line;font-family:var(--font-mono);font-size:13px;background:var(--bg-card);padding:14px;border-radius:6px;border:1px solid var(--border);color:var(--text-primary);margin-bottom:16px;">—</div>
 
         <table class="explanation-table">
@@ -171,36 +196,73 @@
         </table>
       </div>
 
-      <!-- 5. Conflict Section -->
+      <!-- 5. Freshness & Media Evidence Section -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-lg);margin-bottom:var(--space-lg);">
+        
+        <div class="section-card" style="margin-bottom:0;">
+          <div class="section-title">⏳ Freshness Analysis</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+            <div><strong>State:</strong> <span id="fresh-state-text" class="badge">—</span></div>
+            <div><strong>Reported:</strong> <span id="fresh-ts-text">—</span></div>
+            <div><strong>Minutes Since Report:</strong> <span id="fresh-min-text" class="text-mono">—</span></div>
+            <div><strong>Last Updated:</strong> <span id="fresh-lu-text">—</span></div>
+            <div id="fresh-warning-box" style="display:none;color:var(--accent-warning);margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <div class="section-card" style="margin-bottom:0;">
+          <div class="section-title">📷 Media Evidence Analysis</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+            <div><strong>Media Type:</strong> <span id="media-type-text" style="font-weight:600;">—</span></div>
+            <div id="media-notice-text" class="text-secondary">
+              Note: Missing media is not interpreted as proof that a report is false.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 6. Conflict Section -->
       <div class="section-card" id="conflict-section">
         <div class="section-title">⚔️ Conflict Detection Analysis</div>
         <div id="conflict-content-area">No conflicts analyzed yet.</div>
       </div>
 
-      <!-- 6. Correlation / Duplicate Section -->
+      <!-- 7. Correlation / Duplicate Section -->
       <div class="section-card" id="correlation-section">
         <div class="section-title">🔗 Duplicate &amp; Correlation Analysis</div>
         <div id="correlation-content-area">No duplicate analysis performed yet.</div>
       </div>
 
-      <!-- 7. Human Verification Action Area -->
+      <!-- 8. Focused Location Section -->
+      <div class="section-card">
+        <div class="section-title">📍 Incident Location</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);font-size:13px;">
+          <div><strong>Latitude:</strong> <span id="loc-lat" class="text-mono">—</span></div>
+          <div><strong>Longitude:</strong> <span id="loc-lon" class="text-mono">—</span></div>
+          <div><strong>Zone:</strong> <span id="loc-zone">—</span></div>
+          <div><strong>Location Precision:</strong> <span id="loc-prec">—</span></div>
+        </div>
+      </div>
+
+      <!-- 9. Human Verification Action Area -->
       <div class="section-card" style="border-color:var(--accent-primary);">
-        <div class="section-title">👨‍🚒 Human Triage &amp; Verification (Human-in-the-Loop)</div>
+        <div class="section-title">👨‍🚒 Human Triage &amp; Operational Verification</div>
         <p class="text-sm text-secondary">
-          Update the verification status of this crowd report. Changing verification status will re-evaluate responder confidence across the system.
+          Update the operational verification status. Changing status executes human verification in the backend and triggers automatic re-evaluation of responder confidence.
         </p>
 
         <div class="verify-btn-group">
-          <button id="btn-verify-verified" class="btn btn-secondary" onclick="updateVerification('Verified')">
+          <button id="btn-verify-verified" class="btn btn-secondary" onclick="confirmVerification('Verified')">
             ✅ Set Verified
           </button>
-          <button id="btn-verify-review" class="btn btn-secondary" onclick="updateVerification('Needs Review')">
+          <button id="btn-verify-review" class="btn btn-secondary" onclick="confirmVerification('Needs Review')">
             🔍 Set Needs Review
           </button>
-          <button id="btn-verify-pending" class="btn btn-secondary" onclick="updateVerification('Pending')">
+          <button id="btn-verify-pending" class="btn btn-secondary" onclick="confirmVerification('Pending')">
             ⏳ Set Pending
           </button>
-          <button id="btn-verify-rejected" class="btn btn-secondary" onclick="updateVerification('Rejected')">
+          <button id="btn-verify-rejected" class="btn btn-secondary" onclick="confirmVerification('Rejected')">
             ❌ Set Rejected
           </button>
         </div>
@@ -220,246 +282,7 @@
 
 <!-- Scripts -->
 <script src="/static/js/api.js"></script>
-<script>
-  let currentReportId = null;
-
-  document.addEventListener('DOMContentLoaded', async function () {
-    const params = new URLSearchParams(window.location.search);
-    currentReportId = params.get('id');
-
-    if (!currentReportId) {
-      document.getElementById('summary-grid').innerHTML = '<div class="alert-box alert-conflict">No Report ID provided in URL parameter (?id=RPT-xxxxx).</div>';
-      return;
-    }
-
-    await loadReportDetails(currentReportId);
-  });
-
-  async function loadReportDetails(reportId) {
-    try {
-      const data = await API.getReport(reportId);
-      renderDetailsPage(data);
-    } catch (err) {
-      console.error('Failed to load report detail:', err);
-      document.getElementById('summary-grid').innerHTML = `<div class="alert-box alert-conflict">Failed to load report '${reportId}': ${err.message}</div>`;
-    }
-  }
-
-  function renderDetailsPage(data) {
-    const r = data.report;
-    const c = data.confidence;
-    const p = data.priority;
-    const f = data.freshness;
-
-    document.getElementById('report-id-badge').textContent = r.report_id;
-
-    // Summary Grid
-    document.getElementById('summary-grid').innerHTML = `
-      <div class="detail-field">
-        <span class="detail-label">Report ID</span>
-        <span class="detail-value text-mono text-accent">${r.report_id}</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Incident Type</span>
-        <span class="detail-value">${escapeHtml(r.incident_type)}</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Zone</span>
-        <span class="detail-value">${escapeHtml(r.zone)}</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Department</span>
-        <span class="detail-value">${escapeHtml(r.department)}</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Source Type</span>
-        <span class="detail-value">${escapeHtml(r.source_type)}</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Verification Status</span>
-        <span class="detail-value"><span class="badge ${statusBadgeClass(r.status)}">${escapeHtml(r.status)}</span></span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Location Coordinates</span>
-        <span class="detail-value text-mono">${r.latitude.toFixed(5)}, ${r.longitude.toFixed(5)} (${r.location_precision})</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Media Attached</span>
-        <span class="detail-value">${r.media_type}</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Timestamp</span>
-        <span class="detail-value">${r.timestamp ? new Date(r.timestamp).toLocaleString() : 'Missing'}</span>
-      </div>
-      <div class="detail-field">
-        <span class="detail-label">Last Updated</span>
-        <span class="detail-value">${r.last_updated ? new Date(r.last_updated).toLocaleString() : 'N/A'}</span>
-      </div>
-      <div class="detail-field full-width">
-        <span class="detail-label">Description</span>
-        <div class="detail-desc">${escapeHtml(r.description)}</div>
-      </div>
-    `;
-
-    // Alerts
-    const alertsContainer = document.getElementById('alert-container');
-    alertsContainer.innerHTML = '';
-    if (c.capped) {
-      alertsContainer.innerHTML += `
-        <div class="alert-box alert-cap">
-          <div class="alert-title">🔒 CONFIDENCE SCORE CAPPED</div>
-          <div>${escapeHtml(c.cap_reason)}</div>
-        </div>`;
-    }
-    if (r.conflict_detected) {
-      alertsContainer.innerHTML += `
-        <div class="alert-box alert-conflict">
-          <div class="alert-title">⚔️ CONFLICT DETECTED</div>
-          <div>${escapeHtml(r.conflict_explanation)} Related Reports: ${r.related_report_ids.join(', ')}</div>
-        </div>`;
-    }
-    if (r.duplicate_detected) {
-      alertsContainer.innerHTML += `
-        <div class="alert-box alert-correlation">
-          <div class="alert-title">🔗 CORRELATED REPORT GROUP (${r.correlation_group_id})</div>
-          <div>${escapeHtml(r.similarity_reason)}</div>
-        </div>`;
-    }
-
-    // Confidence Card
-    document.getElementById('conf-score-val').textContent = c.score.toFixed(1);
-    const confBadgeEl = document.getElementById('conf-category-badge');
-    confBadgeEl.textContent = c.category;
-    confBadgeEl.className = `badge badge-conf-${c.category.toLowerCase().replace(' ', '-')}`;
-    const confFill = document.getElementById('conf-progress-fill');
-    confFill.style.width = `${Math.min(100, c.score)}%`;
-    confFill.className = `progress-bar-fill ${c.score >= 70 ? 'bg-success' : (c.score >= 40 ? 'bg-medium' : 'bg-low')}`;
-    
-    if (c.capped) {
-      document.getElementById('conf-capped-notice').style.display = 'block';
-    }
-
-    // Priority Card
-    document.getElementById('prio-score-val').textContent = p.score.toFixed(1);
-    const prioBadgeEl = document.getElementById('prio-category-badge');
-    prioBadgeEl.textContent = p.category;
-    prioBadgeEl.className = `badge badge-prio-${p.category.toLowerCase()}`;
-    const prioFill = document.getElementById('prio-progress-fill');
-    prioFill.style.width = `${Math.min(100, p.score)}%`;
-    prioFill.className = `progress-bar-fill ${p.score >= 80 ? 'bg-critical' : (p.score >= 60 ? 'bg-high' : 'bg-medium')}`;
-    document.getElementById('fresh-state-val').textContent = f.state;
-
-    // Confidence Breakdown Table
-    document.getElementById('conf-summary-text').textContent = c.explanation.summary;
-    const confComps = c.explanation.components || {};
-    let confRows = '';
-    for (const [key, item] of Object.entries(confComps)) {
-      confRows += `
-        <tr>
-          <td style="font-weight:600;color:var(--text-primary);">${formatKeyName(key)}</td>
-          <td>${(item.weight * 100).toFixed(0)}%</td>
-          <td>${item.precision || item.source_type || item.media_type || item.status || (item.value * 100).toFixed(0) + '%'}</td>
-          <td style="font-weight:700;color:var(--accent-primary);">${item.contribution.toFixed(2)} pts</td>
-        </tr>`;
-    }
-    document.getElementById('conf-breakdown-rows').innerHTML = confRows;
-
-    // Priority Breakdown Table
-    document.getElementById('prio-explanation-text').textContent = p.explanation.text || 'N/A';
-    const prioExp = p.explanation || {};
-    let prioRows = `
-      <tr>
-        <td style="font-weight:600;">Incident Severity</td>
-        <td>35%</td>
-        <td>${prioExp.incident_severity?.label || 'N/A'} (${((prioExp.incident_severity?.value || 0)*100).toFixed(0)}%)</td>
-        <td style="font-weight:700;color:var(--accent-primary);">${prioExp.incident_severity?.contribution || 0} pts</td>
-      </tr>
-      <tr>
-        <td style="font-weight:600;">Confidence Contribution</td>
-        <td>30%</td>
-        <td>${prioExp.confidence_contribution?.label || 'N/A'}</td>
-        <td style="font-weight:700;color:var(--accent-primary);">${prioExp.confidence_contribution?.contribution || 0} pts</td>
-      </tr>
-      <tr>
-        <td style="font-weight:600;">Freshness Urgency</td>
-        <td>20%</td>
-        <td>${prioExp.freshness_urgency?.label || 'N/A'}</td>
-        <td style="font-weight:700;color:var(--accent-primary);">${prioExp.freshness_urgency?.contribution || 0} pts</td>
-      </tr>
-      <tr>
-        <td style="font-weight:600;">Operational Urgency</td>
-        <td>15%</td>
-        <td>${prioExp.operational_urgency?.label || 'N/A'}</td>
-        <td style="font-weight:700;color:var(--accent-primary);">${prioExp.operational_urgency?.contribution || 0} pts</td>
-      </tr>`;
-    document.getElementById('prio-breakdown-rows').innerHTML = prioRows;
-
-    // Conflicts Content
-    const conflictArea = document.getElementById('conflict-content-area');
-    if (r.conflict_detected) {
-      let relList = (data.conflicts || []).map(c => `<li><strong>${c.report_id}</strong> (${c.incident_type}): ${c.description} [Status: ${c.status}]</li>`).join('');
-      conflictArea.innerHTML = `
-        <div class="alert-box alert-conflict">
-          <div class="alert-title">⚔️ CONFLICT DETECTED</div>
-          <p>${escapeHtml(r.conflict_explanation)}</p>
-          <div style="margin-top:8px;"><strong>Related Conflicting Reports:</strong><ul>${relList || r.related_report_ids.join(', ')}</ul></div>
-        </div>`;
-    } else {
-      conflictArea.innerHTML = '<div class="text-muted text-sm">✅ No known conflicting reports detected for this incident location.</div>';
-    }
-
-    // Correlation Content
-    const correlationArea = document.getElementById('correlation-content-area');
-    if (r.duplicate_detected) {
-      let corrList = (data.correlated_reports || []).map(cr => `<li><strong>${cr.report_id}</strong> (${cr.zone}): ${cr.description}</li>`).join('');
-      correlationArea.innerHTML = `
-        <div class="alert-box alert-correlation">
-          <div class="alert-title">🔗 CORRELATED REPORT GROUP (${r.correlation_group_id})</div>
-          <p>${escapeHtml(r.similarity_reason)}</p>
-          ${r.corroboration_adjustment_note ? `<p style="margin-top:4px;font-style:italic;">Note: ${escapeHtml(r.corroboration_adjustment_note)}</p>` : ''}
-          <div style="margin-top:8px;"><strong>Correlated Observations:</strong><ul>${corrList || r.related_report_ids.join(', ')}</ul></div>
-        </div>`;
-    } else {
-      correlationArea.innerHTML = '<div class="text-muted text-sm">ℹ️ Report is an independent observation with no duplicate clustering.</div>';
-    }
-  }
-
-  async function updateVerification(status) {
-    if (!currentReportId) return;
-    const msgEl = document.getElementById('verification-status-msg');
-    msgEl.innerHTML = `<span class="text-muted">Updating verification status to '${status}'...</span>`;
-    try {
-      await API.verifyReport(currentReportId, status);
-      msgEl.innerHTML = `<span style="color:var(--accent-success);font-weight:600;">✅ Verification status successfully updated to '${status}'. Reloading analysis...</span>`;
-      await loadReportDetails(currentReportId);
-    } catch (err) {
-      console.error('Failed to update verification status:', err);
-      msgEl.innerHTML = `<span style="color:var(--accent-danger);font-weight:600;">❌ Verification failed: ${err.message}</span>`;
-    }
-  }
-
-  function formatKeyName(key) {
-    return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  }
-
-  function statusBadgeClass(status) {
-    const map = {
-      'Verified': 'badge-verified',
-      'Pending': 'badge-pending',
-      'Rejected': 'badge-rejected',
-      'Needs Review': 'badge-needs-review',
-    };
-    return map[status] || 'badge-default';
-  }
-
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-</script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/report-details.js"></script>
 </body>
 </html>

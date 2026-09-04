@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Operational analytics, algorithm evaluation metrics, and distribution charts for disaster reports." />
+  <title>Analytics &amp; Metrics — Disaster Response System</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="header" role="banner">
+    <div class="header-brand">
+      <div class="header-icon" aria-hidden="true">🚨</div>
+      <div class="header-title-group">
+        <div class="header-title">DISASTER RESPONSE COMMAND CENTER</div>
+        <div class="header-subtitle">Analytics &amp; System Evaluation Metrics</div>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div id="system-status" class="status-pill" role="status" aria-live="polite">
+        <span class="dot"></span> SYSTEM OPERATIONAL
+      </div>
+
+      <div class="last-updated" aria-live="polite">
+        Updated: <strong id="last-updated-time">—</strong>
+      </div>
+
+      <div class="role-selector">
+        <label for="role-select">Role:</label>
+        <select id="role-select" aria-label="Select your operational role">
+          <option value="Responder">Responder</option>
+          <option value="City Official">City Official</option>
+          <option value="Coordinator">Coordinator</option>
+        </select>
+      </div>
+
+      <button id="btn-refresh" class="btn btn-secondary btn-sm" aria-label="Refresh all data">
+        ↻ Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Persistent Navigation Bar ───────────────────────────────────── -->
+  <nav class="main-nav" aria-label="Main Navigation">
+    <a href="/dashboard.html" class="nav-link">🖥️ Command Center</a>
+    <a href="/reports.html" class="nav-link">📋 Reports</a>
+    <a href="/dashboard.html#map-container" class="nav-link">🗺️ Map View</a>
+    <a href="/analytics.html" class="nav-link active">📊 Analytics</a>
+    <a href="/methodology.html" class="nav-link">📖 Methodology</a>
+  </nav>
+
+  <!-- ── Main Content ────────────────────────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- EVALUATION DISCLAIMER -->
+    <div class="callout-box" style="border-left-color:var(--accent-warning);background:rgba(245, 158, 11, 0.08);">
+      <div class="callout-icon">🧪</div>
+      <div>
+        <div class="callout-title">ALGORITHM EVALUATION DISCLAIMER</div>
+        <div class="callout-body">
+          Ground truth dataset values are simulated for algorithm evaluation purposes only. Live triage decisions rely solely on transparent rule-based confidence, priority, and freshness engines.
+        </div>
+      </div>
+    </div>
+
+    <!-- EVALUATION KPI CARDS -->
+    <section aria-label="Evaluation Performance Metrics" class="section-gap">
+      <div class="kpi-grid">
+
+        <div class="kpi-card kpi-verified" role="region">
+          <div class="kpi-label">Precision</div>
+          <div id="metric-precision" class="kpi-value loading-val">—</div>
+          <div class="kpi-meta">TP / (TP + FP)</div>
+        </div>
+
+        <div class="kpi-card kpi-total" role="region">
+          <div class="kpi-label">Recall</div>
+          <div id="metric-recall" class="kpi-value loading-val">—</div>
+          <div class="kpi-meta">TP / (TP + FN)</div>
+        </div>
+
+        <div class="kpi-card kpi-critical" role="region">
+          <div class="kpi-label">False Positive Rate</div>
+          <div id="metric-fpr" class="kpi-value loading-val">—</div>
+          <div class="kpi-meta">FP / (FP + TN)</div>
+        </div>
+
+        <div class="kpi-card kpi-pending" role="region">
+          <div class="kpi-label">High Priority Missed</div>
+          <div id="metric-missed" class="kpi-value loading-val">—</div>
+          <div class="kpi-meta">Ground truth TRUE but Low Priority</div>
+        </div>
+
+        <div class="kpi-card kpi-confidence" role="region">
+          <div class="kpi-label">Avg Confidence</div>
+          <div id="metric-avg-conf" class="kpi-value loading-val">—</div>
+          <div class="kpi-meta">Dataset mean confidence score</div>
+        </div>
+
+        <div class="kpi-card kpi-review" role="region">
+          <div class="kpi-label">Avg Priority</div>
+          <div id="metric-avg-prio" class="kpi-value loading-val">—</div>
+          <div class="kpi-meta">Dataset mean priority score</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- DISTRIBUTION CHARTS GRID -->
+    <div class="chart-grid">
+
+      <div class="chart-card">
+        <div class="panel-title" style="margin-bottom:12px;">🛡️ Confidence Distribution</div>
+        <div class="chart-container">
+          <canvas id="chart-confidence"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="panel-title" style="margin-bottom:12px;">⚡ Priority Distribution</div>
+        <div class="chart-container">
+          <canvas id="chart-priority"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="panel-title" style="margin-bottom:12px;">🚨 Incident Type Breakdown</div>
+        <div class="chart-container">
+          <canvas id="chart-incidents"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="panel-title" style="margin-bottom:12px;">⏳ Freshness State Breakdown</div>
+        <div class="chart-container">
+          <canvas id="chart-freshness"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ANALYTICS INTERPRETATION CARD -->
+    <div class="section-card">
+      <div class="section-title">💡 Operational Analytics Interpretation</div>
+      <div id="analytics-interpretation-text" class="text-secondary text-sm" style="line-height:1.6;">
+        Loading analytics interpretations...
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span class="footer-text">
+      Disaster Response Command Center &bull; Decision-support platform — human verification required before all operational actions.
+    </span>
+  </footer>
+
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/static/js/api.js"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/analytics.js"></script>
+</body>
+</html>

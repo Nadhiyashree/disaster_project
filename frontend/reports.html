@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Search, filter, sort, and review disaster reports across the city." />
+  <title>Disaster Reports Triage — Disaster Response System</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="header" role="banner">
+    <div class="header-brand">
+      <div class="header-icon" aria-hidden="true">🚨</div>
+      <div class="header-title-group">
+        <div class="header-title">DISASTER RESPONSE COMMAND CENTER</div>
+        <div class="header-subtitle">Master Disaster Reports Triage</div>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div id="system-status" class="status-pill" role="status" aria-live="polite">
+        <span class="dot"></span> SYSTEM OPERATIONAL
+      </div>
+
+      <div class="last-updated" aria-live="polite">
+        Updated: <strong id="last-updated-time">—</strong>
+      </div>
+
+      <div class="role-selector">
+        <label for="role-select">Role:</label>
+        <select id="role-select" aria-label="Select your operational role">
+          <option value="Responder">Responder</option>
+          <option value="City Official">City Official</option>
+          <option value="Coordinator">Coordinator</option>
+        </select>
+      </div>
+
+      <button id="btn-refresh" class="btn btn-secondary btn-sm" aria-label="Refresh all data">
+        ↻ Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Persistent Navigation Bar ───────────────────────────────────── -->
+  <nav class="main-nav" aria-label="Main Navigation">
+    <a href="/dashboard.html" class="nav-link">🖥️ Command Center</a>
+    <a href="/reports.html" class="nav-link active">📋 Reports</a>
+    <a href="/dashboard.html#map-container" class="nav-link">🗺️ Map View</a>
+    <a href="/analytics.html" class="nav-link">📊 Analytics</a>
+    <a href="/methodology.html" class="nav-link">📖 Methodology</a>
+  </nav>
+
+  <!-- ── Main Content ────────────────────────────────────────────────────── -->
+  <main class="main-content">
+
+    <section class="panel" aria-label="Reports Management">
+      <div class="panel-header">
+        <span class="panel-title"><span class="icon" aria-hidden="true">📋</span> Master Disaster Reports Triage</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="btn-clear-filters" class="btn btn-ghost btn-sm" aria-label="Clear all filters">
+            ✕ Clear Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters Bar -->
+      <div class="filters-bar" role="search" aria-label="Report filters">
+
+        <div class="filter-group">
+          <label for="filter-search">Search:</label>
+          <div class="search-wrapper">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input
+              id="filter-search"
+              type="search"
+              class="search-input with-icon"
+              placeholder="ID, zone, incident, desc, dept…"
+              aria-label="Search reports"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-incident">Incident:</label>
+          <select id="filter-incident" class="filter-select">
+            <option value="">All Types</option>
+            <option value="Road Flooding">Road Flooding</option>
+            <option value="Structural Damage">Structural Damage</option>
+            <option value="Power Outage">Power Outage</option>
+            <option value="Medical Emergency">Medical Emergency</option>
+            <option value="Evacuation Needed">Evacuation Needed</option>
+            <option value="Water Contamination">Water Contamination</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-zone">Zone:</label>
+          <select id="filter-zone" class="filter-select">
+            <option value="">All Zones</option>
+            <option value="North District">North District</option>
+            <option value="South District">South District</option>
+            <option value="East District">East District</option>
+            <option value="West District">West District</option>
+            <option value="Central District">Central District</option>
+            <option value="Riverside">Riverside</option>
+            <option value="Industrial Zone">Industrial Zone</option>
+            <option value="Old Town">Old Town</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-priority">Priority:</label>
+          <select id="filter-priority" class="filter-select">
+            <option value="">All Priorities</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-confidence">Confidence:</label>
+          <select id="filter-confidence" class="filter-select">
+            <option value="">All Confidence</option>
+            <option value="Very High">Very High</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-freshness">Freshness:</label>
+          <select id="filter-freshness" class="filter-select">
+            <option value="">All Freshness</option>
+            <option value="Fresh">Fresh (0-15m)</option>
+            <option value="Aging">Aging (15-120m)</option>
+            <option value="Old">Old (2-6h)</option>
+            <option value="Stale">Stale (&gt;6h)</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-status">Status:</label>
+          <select id="filter-status" class="filter-select">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Verified">Verified</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Needs Review">Needs Review</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-source">Source:</label>
+          <select id="filter-source" class="filter-select">
+            <option value="">All Sources</option>
+            <option value="Citizen Report">Citizen Report</option>
+            <option value="Emergency Call">Emergency Call</option>
+            <option value="Field Responder">Field Responder</option>
+            <option value="Sensor">Sensor</option>
+            <option value="Department Report">Department Report</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-sort">Sort By:</label>
+          <select id="filter-sort" class="filter-select">
+            <option value="priority_score">Priority Score (High-Low)</option>
+            <option value="confidence_score">Confidence Score (High-Low)</option>
+            <option value="freshness_score">Freshness (Newest)</option>
+            <option value="last_updated">Last Updated</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrapper">
+        <table class="report-table" aria-label="Disaster reports table">
+          <thead>
+            <tr>
+              <th scope="col">Report ID</th>
+              <th scope="col">Incident</th>
+              <th scope="col">Zone</th>
+              <th scope="col">Source</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Confidence</th>
+              <th scope="col">Freshness</th>
+              <th scope="col">Status</th>
+              <th scope="col">Department</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="reports-table-body">
+            <tr>
+              <td colspan="10">
+                <div class="state-container">
+                  <div class="spinner"></div>
+                  <span class="state-desc">Loading master disaster reports…</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav class="pagination" aria-label="Table pagination">
+        <span id="pagination-info" class="pagination-info">—</span>
+        <div class="pagination-controls">
+          <button id="btn-prev" class="page-btn" disabled>← Prev</button>
+          <div id="pagination-pages" class="pagination-controls"></div>
+          <button id="btn-next" class="page-btn" disabled>Next →</button>
+        </div>
+      </nav>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <span class="footer-text">
+      Disaster Response Command Center &bull; Decision-support platform — human verification required before all operational actions.
+    </span>
+  </footer>
+
+</div>
+
+<!-- Scripts -->
+<script src="/static/js/api.js"></script>
+<script src="/static/js/app.js"></script>
+<script src="/static/js/reports.js"></script>
+</body>
+</html>
