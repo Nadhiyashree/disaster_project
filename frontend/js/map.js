@@ -106,7 +106,14 @@
   function initMap(containerId) {
     if (_initialized) return;
     const container = document.getElementById(containerId);
-    if (!container) return;
+    if (!container) {
+      console.error('[map.js] Container not found:', containerId);
+      return;
+    }
+
+    // Log container size for diagnostics
+    const rect = container.getBoundingClientRect();
+    console.log('[map.js] Container size at init:', rect.width, 'x', rect.height);
 
     try {
       _map = L.map(containerId, {
@@ -114,19 +121,47 @@
         zoom: 11,
         zoomControl: true,
         attributionControl: true,
+        preferCanvas: false,
       });
 
-      L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+      // Dark tile layer — Stadia Alidade Smooth Dark (free, no API key needed)
+      const darkTiles = L.tileLayer(
+        'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
         {
-          attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; OpenStreetMap contributors',
+          maxZoom: 20,
+        }
+      );
+
+      // Fallback: OSM standard (always free, no key)
+      const osmFallback = L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+          attribution: '&copy; OpenStreetMap contributors',
           maxZoom: 19,
         }
-      ).addTo(_map);
+      );
 
+      // Try dark tiles first; if any tile errors occur, swap to OSM fallback
+      let usingFallback = false;
+      darkTiles.on('tileerror', function () {
+        if (usingFallback) return;
+        usingFallback = true;
+        console.warn('[map.js] Dark tiles unavailable, switching to OSM fallback');
+        _map.removeLayer(darkTiles);
+        osmFallback.addTo(_map);
+      });
+
+      darkTiles.addTo(_map);
       _markerLayer = L.layerGroup().addTo(_map);
       _initialized = true;
+
+      // Multiple invalidateSize calls to handle CSS layout settling
+      setTimeout(() => { if (_map) { _map.invalidateSize(true); } }, 200);
+      setTimeout(() => { if (_map) { _map.invalidateSize(true); } }, 600);
+      setTimeout(() => { if (_map) { _map.invalidateSize(true); } }, 1200);
+
+      console.log('[map.js] Map initialized successfully');
     } catch (err) {
       console.error('[map.js] Failed to initialize map:', err);
     }
@@ -164,6 +199,13 @@
 
       _markerLayer.addLayer(marker);
       count++;
+    }
+
+    if (count > 0 && _map) {
+      setTimeout(() => {
+        invalidateSize();
+        fitMarkers();
+      }, 200);
     }
   }
 

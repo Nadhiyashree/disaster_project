@@ -16,6 +16,7 @@
     currentOffset: 0,
     currentLimit: DEFAULT_PAGE_SIZE,
     totalReports: 0,
+    lastLoadedReports: [],   // cache for map marker re-render after map init
     filters: {
       search: '',
       incident_type: '',
@@ -181,14 +182,28 @@
       state.totalReports = res.total;
       renderTable(res.items);
       renderPagination();
-      
-      // Update map markers with current filtered results
+
+      // Always update map — if map already initialized render now,
+      // otherwise the 'mapReady' event handler below will render when ready.
       if (window.MapModule && window.MapModule.initialized) {
-        window.MapModule.renderMarkers(res.items);
+        window.MapModule.renderMarkers(state.lastLoadedReports);
       }
     } catch (err) {
       console.error('[dashboard] Failed to load reports:', err);
       showTableError(err.message);
+    }
+  }
+
+  // Fetch a larger batch of reports for the map (independent of the table page)
+  async function loadMapMarkers() {
+    try {
+      const res = await window.API.getReports({ limit: 500, offset: 0 });
+      state.lastLoadedReports = res.items || [];
+      if (window.MapModule && window.MapModule.initialized) {
+        window.MapModule.renderMarkers(state.lastLoadedReports);
+      }
+    } catch (err) {
+      console.error('[dashboard] Failed to load map markers:', err);
     }
   }
 
@@ -380,6 +395,17 @@
     loadStats();
     loadPriorityQueue();
     loadReports();
+    // Load markers for the map (larger batch, independent of table pagination)
+    loadMapMarkers();
+  });
+
+  // When map finishes initializing, render any already-fetched markers
+  document.addEventListener('mapReady', () => {
+    if (state.lastLoadedReports.length > 0) {
+      window.MapModule.renderMarkers(state.lastLoadedReports);
+    } else {
+      loadMapMarkers();
+    }
   });
 
 })();

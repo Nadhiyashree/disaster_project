@@ -103,6 +103,18 @@ async function getMetrics() {
   return apiFetch('/api/metrics');
 }
 
+async function getBaselineExperiment() {
+  return apiFetch('/api/experiments/baseline');
+}
+
+async function getThresholdExperiment() {
+  return apiFetch('/api/experiments/thresholds');
+}
+
+async function getValidationStudy() {
+  return apiFetch('/api/validation');
+}
+
 // Export global API object
 window.API = {
   getHealth,
@@ -114,4 +126,8 @@ window.API = {
   verifyReport,
   getDashboardStats,
   getMetrics,
+  getBaselineExperiment,
+  getThresholdExperiment,
+  getValidationStudy,
 };
+

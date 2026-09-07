@@ -6,11 +6,10 @@
   <meta name="description" content="Disaster Response Command Center — real-time crowd-report verification and priority intelligence dashboard." />
   <title>Command Center — Disaster Response System</title>
 
-  <!-- Fonts & Leaflet -->
+  <!-- Fonts & Leaflet (served locally for offline reliability) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="/static/css/leaflet.css" />
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
@@ -160,9 +159,17 @@
 
       <!-- PRIORITY RESPONSE QUEUE -->
       <section class="panel" aria-label="Priority Response Queue" id="priority-queue-section">
-        <div class="panel-header">
-          <span class="panel-title"><span class="icon" aria-hidden="true">🔥</span> PRIORITY RESPONSE QUEUE</span>
-          <span class="text-xs text-muted">Sorted by Priority Score DESC</span>
+        <div class="panel-header" style="flex-wrap:wrap;gap:8px;">
+          <div>
+            <span class="panel-title"><span class="icon" aria-hidden="true">🔥</span> PRIORITY RESPONSE QUEUE</span>
+            <span class="text-xs text-muted">Sorted by Priority Score DESC</span>
+          </div>
+          <div class="flex gap-xs align-center text-xs">
+            <span class="text-muted">Demo Filters:</span>
+            <a href="/reports.html?priority=Critical" class="badge badge-outline text-accent-red">🚨 Critical</a>
+            <a href="/reports.html?freshness=Stale" class="badge badge-outline text-accent-cyan">⏳ Stale</a>
+            <a href="/reports.html?status=Needs+Review" class="badge badge-outline text-accent-yellow">⚠️ Needs Review</a>
+          </div>
         </div>
         <div class="table-wrapper">
           <table class="report-table" aria-label="Priority queue table">
@@ -204,7 +211,7 @@
         <div id="map-error" class="map-error" style="display:none">
           ⚠️ Map failed to load
         </div>
-        <div id="incident-map" role="application"></div>
+        <div id="incident-map" role="application" aria-label="Incident map" style="height:480px;min-height:480px;width:100%;display:block;"></div>
       </section>
 
     </div>
@@ -243,8 +250,7 @@
 </div>
 
 <!-- Scripts -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN2GqBk=" crossorigin=""></script>
+<script src="/static/js/leaflet.js"></script>
 <script src="/static/js/api.js"></script>
 <script src="/static/js/app.js"></script>
 <script src="/static/js/map.js"></script>
@@ -270,14 +276,23 @@
   document.addEventListener('DOMContentLoaded', function () {
     const loading = document.getElementById('map-loading');
     const mapErr  = document.getElementById('map-error');
-    try {
-      window.MapModule.initMap('incident-map');
-      if (loading) loading.style.display = 'none';
-    } catch (e) {
-      console.error('Map init failed:', e);
-      if (loading) loading.style.display = 'none';
-      if (mapErr)  mapErr.style.display  = 'flex';
-    }
+    // Delay map init slightly so the browser completes layout/paint
+    // before Leaflet measures the container size.
+    setTimeout(function () {
+      try {
+        if (typeof L === 'undefined') {
+          throw new Error('Leaflet (L) is not defined — CDN may have failed to load');
+        }
+        window.MapModule.initMap('incident-map');
+        if (loading) loading.style.display = 'none';
+        // Signal dashboard.js that the map is ready to receive markers
+        document.dispatchEvent(new CustomEvent('mapReady'));
+      } catch (e) {
+        console.error('Map init failed:', e);
+        if (loading) loading.style.display = 'none';
+        if (mapErr)  mapErr.style.display  = 'flex';
+      }
+    }, 150);
   });
 </script>
 

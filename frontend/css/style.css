@@ -379,6 +379,11 @@ img, svg { display: block; }
   border-radius: var(--border-radius-lg);
   overflow: hidden;
 }
+/* Map panel needs overflow visible so Leaflet tiles render correctly */
+#map-container.panel {
+  overflow: visible;
+  position: relative;
+}
 
 .panel-header {
   display: flex;
@@ -419,13 +424,21 @@ img, svg { display: block; }
 #map-container {
   position: relative;
   border-radius: var(--border-radius-lg);
-  overflow: hidden;
+  /* Do NOT use overflow:hidden — it clips Leaflet's internal tile layers & controls */
+  overflow: visible;
   border: 1px solid var(--border);
 }
+/* Clip only the map div itself so tiles don't spill outside the rounded panel */
 #incident-map {
   width: 100%;
-  height: 420px;
-  background: #0a0d14;
+  height: 480px !important;
+  min-height: 480px !important;
+  background: #0d1117;
+  border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+  overflow: hidden;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 .map-overlay {
   position: absolute;
@@ -436,17 +449,22 @@ img, svg { display: block; }
   flex-direction: column;
   gap: var(--space-xs);
 }
+/* Loading/error overlays sit on top of the map div, not the panel */
 .map-loading, .map-error {
   position: absolute;
-  inset: 0;
+  top: 50px; /* below panel-header */
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10,13,20,.85);
-  z-index: 400;
+  background: rgba(10,13,20,.88);
+  z-index: 10;
   font-size: var(--font-size-sm);
   color: var(--text-muted);
   gap: 10px;
+  pointer-events: none;
 }
 .map-error { color: var(--accent-danger); }
 
@@ -1216,5 +1234,64 @@ img, svg { display: block; }
   .main-nav { padding: 0 var(--space-sm); }
   .nav-link { padding: 10px 10px; font-size: 10px; }
 }
+
+/* ── Incident Map Styling ────────────────────────────────────────────── */
+#map-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+  position: relative;
+  overflow: hidden;
+}
+#incident-map {
+  width: 100%;
+  height: 480px;
+  min-height: 420px;
+  flex: 1;
+  border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+  background: #0f172a;
+  position: relative;
+  z-index: 1;
+}
+.map-loading, .map-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+.critical-marker-pulse {
+  animation: marker-pulse 1.8s infinite;
+}
+@keyframes marker-pulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 2px #ef4444); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 10px #ef4444); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 2px #ef4444); }
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+}
+.leaflet-popup-tip {
+  background: #1e293b !important;
+}
+.popup-title { font-weight: 700; font-size: 13px; margin-bottom: 8px; color: #f8fafc; }
+.popup-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.popup-label { color: #94a3b8; }
+.popup-value { font-weight: 600; }
+
 
 

@@ -38,42 +38,40 @@ Landing page:   http://127.0.0.1:8000
 Dashboard:      http://127.0.0.1:8000/dashboard
 
 
-API ENDPOINTS (Phase 1)
+API ENDPOINTS (Phases 1–4)
 -----------------------
 GET  /api/health                    — Health check
-GET  /api/reports                   — List reports (paginated, filterable)
-GET  /api/reports/{report_id}       — Single report by ID (e.g. RPT-00001)
+GET  /api/reports                   — List reports (paginated, filterable by 10 criteria)
+GET  /api/reports/{report_id}       — Single report details with confidence/priority/conflict breakdowns
+GET  /api/reports/priority          — Priority Response Queue (Sorted by Priority DESC)
+GET  /api/reports/stale             — Stale reports (>6 hours old)
+GET  /api/reports/conflicts         — Reports with detected contradictions
+POST /api/reports/{id}/verify       — Update report status (Human-in-the-loop audit logged)
 GET  /api/dashboard/stats           — Aggregated dashboard statistics
+GET  /api/metrics                   — Algorithm evaluation metrics (Precision, Recall, FPR)
+GET  /api/experiments/baseline      — Baseline (FIFO) vs Dashboard Time-to-Surface simulation
+GET  /api/experiments/thresholds    — Threshold trade-off evaluation (0.30, 0.50, 0.65)
+GET  /api/validation                — Simulated proxy validation study results
 GET  /docs                          — Swagger interactive API documentation
 
 
-EXAMPLE API CALLS
------------------
-# Health
-curl http://127.0.0.1:8000/api/health
+STEP 5 — Run Automated Tests
+----------------------------
+pytest tests/
 
-# First 25 reports
-curl "http://127.0.0.1:8000/api/reports?limit=25&offset=0"
 
-# Filter by incident type
-curl "http://127.0.0.1:8000/api/reports?incident_type=Road%20Flooding&limit=10"
-
-# Search free text
-curl "http://127.0.0.1:8000/api/reports?search=flooding&limit=10"
-
-# Single report
-curl http://127.0.0.1:8000/api/reports/RPT-00001
-
-# Invalid report (returns 404)
-curl http://127.0.0.1:8000/api/reports/RPT-99999
-
-# Dashboard statistics
-curl http://127.0.0.1:8000/api/dashboard/stats
+FRONTEND URLS
+-------------
+Landing page:   http://127.0.0.1:8000
+Dashboard:      http://127.0.0.1:8000/dashboard.html
+Reports:        http://127.0.0.1:8000/reports.html
+Analytics:      http://127.0.0.1:8000/analytics.html
+Methodology:    http://127.0.0.1:8000/methodology.html
 
 
 NOTES
 -----
+- Ground truth values, baseline review times, and proxy validation metrics are simulated for evaluation.
+- All human verification actions write to append-only log data/verification_audit.json.
 - Use --reload for development (auto-restarts on code changes).
-- The dataset is generated with a fixed seed (42) for reproducibility.
-- Do NOT use --reload in production.
-- Ground truth field is for evaluation only; it is not displayed in the UI.
+

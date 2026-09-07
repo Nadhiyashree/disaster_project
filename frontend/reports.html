@@ -69,6 +69,16 @@
         </div>
       </div>
 
+      <!-- Quick Demo Preset Filters -->
+      <div class="p-xs bg-darker border-subtle rounded mb-sm flex flex-wrap gap-xs align-center">
+        <span class="text-xs text-muted font-bold mr-xs">⚡ Quick Demo Filters:</span>
+        <button class="btn btn-sm btn-outline text-accent-red" onclick="window.applyDemoFilter('critical')">🚨 Critical Reports</button>
+        <button class="btn btn-sm btn-outline text-accent-yellow" onclick="window.applyDemoFilter('needs_review')">⚠️ Needs Review</button>
+        <button class="btn btn-sm btn-outline text-accent-cyan" onclick="window.applyDemoFilter('stale')">⏳ Stale (&gt;6h)</button>
+        <button class="btn btn-sm btn-outline text-accent-purple" onclick="window.applyDemoFilter('low_conf')">🛡️ Low Confidence</button>
+        <button class="btn btn-sm btn-outline text-accent-green" onclick="window.applyDemoFilter('verified')">✅ Verified</button>
+      </div>
+
       <!-- Filters Bar -->
       <div class="filters-bar" role="search" aria-label="Report filters">
 

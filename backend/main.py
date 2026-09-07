@@ -44,6 +44,12 @@ from backend.services.freshness_engine import evaluate_freshness
 from backend.services.metrics import compute_system_metrics
 from backend.services.priority_engine import calculate_priority
 
+from experiments.baseline import run_baseline_experiment
+from experiments.evaluation import run_threshold_experiment
+from experiments.validation import run_proxy_validation_study
+import json
+from backend.data_loader import DATA_DIR
+
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
@@ -522,6 +528,34 @@ async def get_report_detail(report_id: str) -> ReportDetailResponse:
     )
 
 
+AUDIT_LOG_PATH = DATA_DIR / "verification_audit.json"
+
+
+def _append_verification_audit_log(report_id: str, prev_status: str, new_status: str, notes: Optional[str]) -> None:
+    """Appends verification event record to data/verification_audit.json for prototype accountability."""
+    entry = {
+        "report_id": report_id,
+        "previous_status": prev_status,
+        "new_status": new_status,
+        "timestamp": datetime.now(tz=timezone.utc).isoformat(),
+        "notes": notes,
+        "action": f"Operational verification status changed from '{prev_status}' to '{new_status}'",
+    }
+    audit_data = []
+    if AUDIT_LOG_PATH.exists():
+        try:
+            with open(AUDIT_LOG_PATH, "r", encoding="utf-8") as f:
+                audit_data = json.load(f)
+        except Exception:
+            audit_data = []
+    audit_data.append(entry)
+    try:
+        with open(AUDIT_LOG_PATH, "w", encoding="utf-8") as f:
+            json.dump(audit_data, f, indent=2)
+    except Exception as e:
+        logger.error("Failed to write verification audit log: %s", e)
+
+
 # ── Human Verification Endpoint ─────────────────────────────────────────────
 
 @app.post(
@@ -543,6 +577,8 @@ async def verify_report(report_id: str, req: VerificationRequest) -> ReportSchem
     if df[mask].empty:
         raise HTTPException(status_code=404, detail=f"Report '{report_id}' not found.")
 
+    prev_status = str(df.loc[mask, "status"].values[0])
+
     # Update in DataFrame
     now_iso = datetime.now(tz=timezone.utc).isoformat()
     df.loc[mask, "status"] = req.status
@@ -555,10 +591,72 @@ async def verify_report(report_id: str, req: VerificationRequest) -> ReportSchem
     df.to_csv(CSV_PATH, index=False)
     logger.info("Report %s status updated to %s by human verifier.", report_id, req.status)
 
+    # Append to verification audit log
+    _append_verification_audit_log(report_id, prev_status, req.status, req.notes)
+
     # Refresh enriched cache
     enriched = get_enriched_reports(force_reload=True)
     match = next((r for r in enriched if r["report_id"] == report_id), None)
     return ReportSchema.model_validate(match)
+
+
+# ── Experiments & Validation APIs ──────────────────────────────────────────
+
+@app.get(
+    "/api/experiments/baseline",
+    tags=["Experiments"],
+    summary="Simulated baseline comparison (Manual Sequential Review vs Dashboard-Assisted)",
+)
+async def experiment_baseline() -> Dict[str, Any]:
+    from experiments.baseline import run_baseline_simulation
+    reports = get_enriched_reports()
+    sim_data = run_baseline_simulation(reports)
+    return {
+        "status": "success",
+        "results": sim_data,
+        "baseline_fifo": sim_data.get("baseline_fifo"),
+        "priority_dashboard": sim_data.get("priority_dashboard"),
+        "time_saved_percentage": sim_data.get("time_saved_percentage"),
+        "disclaimer": "Simulated prototype baseline measurement for algorithm evaluation. Does not represent field performance.",
+    }
+
+
+@app.get(
+    "/api/experiments/thresholds",
+    tags=["Experiments"],
+    summary="Threshold trade-off experiment (Responder 0.30, Balanced 0.50, City Official 0.65)",
+)
+async def experiment_thresholds() -> Dict[str, Any]:
+    from experiments.evaluation import evaluate_threshold_tradeoffs
+    reports = get_enriched_reports()
+    results = evaluate_threshold_tradeoffs(reports)
+    return {
+        "status": "success",
+        "results": results,
+        "recommended_strategies": {
+            "0.30": "Responder (High Recall)",
+            "0.50": "Balanced Default",
+            "0.65": "City Official (High Precision)",
+        },
+        "disclaimer": "Simulated evaluation against internal ground truth. Does not establish real-world emergency performance.",
+    }
+
+
+@app.get(
+    "/api/validation",
+    tags=["Experiments"],
+    summary="Simulated/proxy validation study results",
+)
+async def proxy_validation() -> Dict[str, Any]:
+    from experiments.validation import run_validation_study
+    study_data = run_validation_study()
+    return {
+        "status": "success",
+        "summary": study_data.get("summary"),
+        "results": study_data.get("results"),
+        "disclaimer": study_data.get("disclaimer"),
+    }
+
 
 
 # ── Dashboard Statistics ─────────────────────────────────────────────────────
@@ -686,3 +784,5 @@ async def system_metrics() -> MetricsResponse:
     reports = get_enriched_reports()
     metrics_data = compute_system_metrics(reports)
     return MetricsResponse.model_validate(metrics_data)
+
+

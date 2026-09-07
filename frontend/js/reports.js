@@ -184,9 +184,55 @@
     }
   }
 
+  function parseUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('priority') && DOM.priority) {
+      DOM.priority.value = params.get('priority');
+      state.filters.priority = params.get('priority');
+    }
+    if (params.has('status') && DOM.status) {
+      DOM.status.value = params.get('status');
+      state.filters.status = params.get('status');
+    }
+    if (params.has('freshness') && DOM.freshness) {
+      DOM.freshness.value = params.get('freshness');
+      state.filters.freshness = params.get('freshness');
+    }
+    if (params.has('confidence') && DOM.confidence) {
+      DOM.confidence.value = params.get('confidence');
+      state.filters.confidence = params.get('confidence');
+    }
+  }
+
+  window.applyDemoFilter = function (preset) {
+    if (DOM.clearBtn) DOM.clearBtn.click();
+
+    if (preset === 'critical') {
+      if (DOM.priority) DOM.priority.value = 'Critical';
+      state.filters.priority = 'Critical';
+    } else if (preset === 'needs_review') {
+      if (DOM.status) DOM.status.value = 'Needs Review';
+      state.filters.status = 'Needs Review';
+    } else if (preset === 'stale') {
+      if (DOM.freshness) DOM.freshness.value = 'Stale';
+      state.filters.freshness = 'Stale';
+    } else if (preset === 'low_conf') {
+      if (DOM.confidence) DOM.confidence.value = 'Low';
+      state.filters.confidence = 'Low';
+    } else if (preset === 'verified') {
+      if (DOM.status) DOM.status.value = 'Verified';
+      state.filters.status = 'Verified';
+    }
+    state.offset = 0;
+    fetchAndRender();
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
     cacheDom();
+    parseUrlParams();
     bindEvents();
     fetchAndRender();
   });
 })();
+
+

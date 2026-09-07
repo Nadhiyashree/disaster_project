@@ -1,0 +1,66 @@
+[
+  {
+    "report_id": "RPT-00002",
+    "previous_status": "Verified",
+    "new_status": "Verified",
+    "timestamp": "2026-09-04T16:34:34.218716+00:00",
+    "notes": "Verified by responder unit 5.",
+    "action": "Operational verification status changed from 'Verified' to 'Verified'"
+  },
+  {
+    "report_id": "RPT-00003",
+    "previous_status": "Needs Review",
+    "new_status": "Rejected",
+    "timestamp": "2026-09-04T16:34:35.707372+00:00",
+    "notes": "Phase 4 audit test note.",
+    "action": "Operational verification status changed from 'Needs Review' to 'Rejected'"
+  },
+  {
+    "report_id": "RPT-00002",
+    "previous_status": "Verified",
+    "new_status": "Verified",
+    "timestamp": "2026-09-04T16:35:05.661793+00:00",
+    "notes": "Verified by responder unit 5.",
+    "action": "Operational verification status changed from 'Verified' to 'Verified'"
+  },
+  {
+    "report_id": "RPT-00003",
+    "previous_status": "Rejected",
+    "new_status": "Rejected",
+    "timestamp": "2026-09-04T16:35:06.937710+00:00",
+    "notes": "Phase 4 audit test note.",
+    "action": "Operational verification status changed from 'Rejected' to 'Rejected'"
+  },
+  {
+    "report_id": "RPT-00003",
+    "previous_status": "Rejected",
+    "new_status": "Rejected",
+    "timestamp": "2026-09-04T16:35:28.429310+00:00",
+    "notes": "Phase 4 audit test note.",
+    "action": "Operational verification status changed from 'Rejected' to 'Rejected'"
+  },
+  {
+    "report_id": "RPT-00003",
+    "previous_status": "Rejected",
+    "new_status": "Rejected",
+    "timestamp": "2026-09-04T16:36:09.579293+00:00",
+    "notes": "Phase 4 audit test note.",
+    "action": "Operational verification status changed from 'Rejected' to 'Rejected'"
+  },
+  {
+    "report_id": "RPT-00002",
+    "previous_status": "Verified",
+    "new_status": "Verified",
+    "timestamp": "2026-09-04T16:39:32.121226+00:00",
+    "notes": "Verified by responder unit 5.",
+    "action": "Operational verification status changed from 'Verified' to 'Verified'"
+  },
+  {
+    "report_id": "RPT-00003",
+    "previous_status": "Rejected",
+    "new_status": "Rejected",
+    "timestamp": "2026-09-04T16:39:33.180386+00:00",
+    "notes": "Phase 4 audit test note.",
+    "action": "Operational verification status changed from 'Rejected' to 'Rejected'"
+  }
+]
