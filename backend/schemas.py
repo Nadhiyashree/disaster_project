@@ -62,6 +62,8 @@ class ReportSchema(BaseModel):
     conflict_detected: bool = False
     conflict_type: Optional[str] = None
     conflict_explanation: Optional[str] = None
+    spatial_distance_km: Optional[float] = None        # Distance to first conflicting peer (km)
+    temporal_difference_minutes: Optional[float] = None  # |Δt| to first conflicting peer (min)
 
     duplicate_detected: bool = False
     correlation_group_id: Optional[str] = None

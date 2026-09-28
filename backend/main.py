@@ -252,6 +252,8 @@ def get_enriched_reports(force_reload: bool = False) -> List[Dict[str, Any]]:
             "conflict_detected": conflict["conflict_detected"],
             "conflict_type": conflict["conflict_type"],
             "conflict_explanation": conflict["conflict_explanation"],
+            "spatial_distance_km": conflict.get("spatial_distance_km"),
+            "temporal_difference_minutes": conflict.get("temporal_difference_minutes"),
             "duplicate_detected": dup["duplicate_detected"],
             "correlation_group_id": dup["correlation_group_id"],
             "related_report_ids": dup["related_report_ids"],
