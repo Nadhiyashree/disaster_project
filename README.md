@@ -18,8 +18,8 @@ The system incorporates automated spatial-temporal conflict detection, near-dupl
 | Phase | Description | Status | Completion |
 |---|---|:---:|:---:|
 | **Phase 1** | Runnable foundation, synthetic dataset (1,200 reports), basic REST backend, CSV data layer | ✅ | 35% |
-| **Phase 2** | Spatial-temporal conflict engine, duplicate clustering, confidence/priority formulas, evaluation metrics, unit tests | ✅ | 70% |
-| **Phase 3** | Full operations dashboard UI, Leaflet map, analytics, methodology, human-verification workflow, API documentation | ✅ | **100%** |
+| **Phase 2** | Spatial-temporal conflict engine, duplicate clustering, confidence/priority formulas, evaluation metrics, unit tests | ✅ | **70%** |
+| **Phase 3** | Full operations dashboard UI, Leaflet map, analytics, methodology, human-verification workflow, API documentation | ⏳ *Planned* | 100% |
 
 ---
 
