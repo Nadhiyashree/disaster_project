@@ -16,6 +16,7 @@ Integrates the core intelligence layer:
 from __future__ import annotations
 
 import logging
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -61,16 +62,29 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
+# Lifespan context manager
+# ---------------------------------------------------------------------------
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if not CSV_PATH.exists():
+        logger.info("Dataset not found; generating dataset now...")
+        generate_dataset()
+    get_enriched_reports(force_reload=True)
+    yield
+
+# ---------------------------------------------------------------------------
 # Application setup
 # ---------------------------------------------------------------------------
 
 app = FastAPI(
     title="Disaster Response Crowd-Report Verification & Confidence Dashboard",
     description=(
-        "Phase 2 Backend: Core intelligence layer with rule-based confidence, priority, "
+        "Phase 3 End-to-End Command Center: Core intelligence layer with rule-based confidence, priority, "
         "freshness, conflict detection, duplicate detection, and explainable triage queues."
     ),
-    version="2.0.0",
+    version="3.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -269,14 +283,6 @@ def get_enriched_reports(force_reload: bool = False) -> List[Dict[str, Any]]:
     _enriched_cache = enriched
     logger.info("Enriched %d disaster reports successfully.", len(_enriched_cache))
     return _enriched_cache
-
-
-@app.on_event("startup")
-async def startup_event() -> None:
-    if not CSV_PATH.exists():
-        logger.info("Dataset not found; generating dataset now...")
-        generate_dataset()
-    get_enriched_reports(force_reload=True)
 
 
 # ---------------------------------------------------------------------------

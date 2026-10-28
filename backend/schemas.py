@@ -16,8 +16,8 @@ from pydantic import BaseModel, Field
 # ---------------------------------------------------------------------------
 
 class HealthResponse(BaseModel):
-    status: str = Field(..., example="ok")
-    service: str = Field(..., example="disaster-response-dashboard")
+    status: str = Field(..., json_schema_extra={"example": "ok"})
+    service: str = Field(..., json_schema_extra={"example": "disaster-response-dashboard"})
     timestamp: Optional[str] = None
 
 

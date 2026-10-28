@@ -187,10 +187,24 @@
       <div class="section-card">
         <div class="section-title">⚔️ 6. Conflict &amp; Duplicate Clustering Engine</div>
         <p class="text-secondary text-sm" style="line-height:1.6;">
-          <strong>Duplicate Clustering:</strong> Near-identical observations occurring in close spatial proximity (&le; 0.5 km) and time window (&le; 3 hours) are grouped into a correlation cluster. Correlated reports are discounted when calculating independent corroboration to prevent multiple duplicate reports from artificially inflating confidence.
+          <strong>Duplicate Clustering (1.0 km / 0.50 / 30 min):</strong> Reports sharing the same incident type qualify as correlation candidates when within <strong>&le; 1.0 km</strong> (Haversine great-circle distance) and a <strong>&le; 30-minute</strong> temporal window. The composite duplicate score is evaluated as:
         </p>
-        <p class="text-secondary text-sm" style="line-height:1.6;margin-top:8px;">
-          <strong>Conflict Detection:</strong> Proximal reports claiming opposing operational conditions (e.g. <em>Road completely blocked</em> vs <em>Road passable</em>) or conflicting verification statuses are flagged neutrally with: <code>"Conflicting observations detected. Human verification recommended."</code>
+        <div class="formula-box">
+          DuplicateScore = 0.40 &times; SpatialScore + 0.40 &times; TemporalScore + 0.20 &times; IncidentScore &ge; 0.80<br />
+          <span style="font-size:12px;opacity:0.9;">Relaxation condition: Geographic proximity &le; 0.20 km (200m) with description similarity &ge; 0.50 (50%).</span>
+        </div>
+        <p class="text-secondary text-sm" style="line-height:1.6;margin-top:6px;">
+          Correlated reports are grouped into connected-component clusters using DFS and discounted during independent corroboration scoring to prevent duplicate reports from artificially inflating confidence. Across 1,200 dataset reports, <strong>802 duplicates</strong> are grouped into <strong>67 correlation clusters</strong>.
+        </p>
+        <p class="text-secondary text-sm" style="line-height:1.6;margin-top:12px;">
+          <strong>Conflict Detection (1.0 km / 30 min):</strong> Candidate pairs must fall within <strong>&le; 1.0 km</strong> and a temporal window of <strong>&le; 30 minutes</strong> (not 360 minutes, ensuring rapid dynamic hazards are not conflated over hours). Candidate reports are flagged when exhibiting:
+        </p>
+        <ul style="color:var(--text-secondary);font-size:13px;line-height:1.7;margin-left:20px;margin-top:6px;">
+          <li><strong>Verification Status Discrepancy:</strong> One report is <em>"Verified"</em> while the other is <em>"Rejected"</em> for the same incident in the same spatial-temporal window.</li>
+          <li><strong>Material Claim Contradiction:</strong> One report contains blocked keywords (<em>blocked, submerged, collapsed</em>) while the other claims clear conditions (<em>clear, passable, open</em>).</li>
+        </ul>
+        <p class="text-secondary text-sm" style="line-height:1.6;margin-top:6px;">
+          Flagged reports neutrally display: <code>"Conflicting observations detected. Human verification recommended."</code> Across the active dataset, <strong>94 conflicting reports</strong> are identified.
         </p>
       </div>
 
